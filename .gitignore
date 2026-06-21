@@ -1,0 +1,8 @@
+# FXServer
+cache/
+*.log
+.replxx_history
+
+# Sensitif (Jangan diunggah jika repository bersifat publik)
+server.cfg
+server.cfg.bkp
