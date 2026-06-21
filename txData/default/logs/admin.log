@@ -1,0 +1,226 @@
+================================================================
+======== txAdmin v8.1.1 atop fxserver 31039 Starting - 21/06/2026, 16.59.15
+================================================================
+[16:59:50][Foca_Geralio] created admins file
+[17:00:38][Foca_Geralio] Config changes: general.serverName
+[17:00:38][Foca_Geralio] Changing global settings via setup stepper and started Deployer.
+[17:00:42][Foca_Geralio] Setting recipe.
+[17:01:03][Foca_Geralio] Running recipe.
+[17:02:24][Foca_Geralio] Config changes: server.dataPath
+[17:02:24][Foca_Geralio] Completed and committed server deploy.
+[17:04:26][Foca_Geralio] Refreshed resources
+[17:04:28][Foca_Geralio] Ensured resource "qbx_core"
+[17:04:30][Foca_Geralio] Ensured resource "qbx_core"
+[17:17:08][Foca_Geralio] Refreshed resources
+[17:17:10][Foca_Geralio] Ensured resource "ox_lib"
+[17:17:11][Foca_Geralio] Ensured resource "ox_target"
+[17:17:12][Foca_Geralio] Ensured resource "qbx_core"
+[17:18:16][Foca_Geralio] Refreshed resources
+[17:18:17][Foca_Geralio] Ensured resource "oxmysql"
+[17:23:16][Foca_Geralio] Ensured resource "qbx_core"
+[17:23:17][MONITOR] Restarting server: Server process close detected.
+[17:28:19][Foca_Geralio] executed "RESTART SERVER"
+[17:28:29][MONITOR] Restarting server: Server process close detected.
+[17:28:32][MONITOR] Restarting server: Server process close detected.
+[17:28:36][MONITOR] Restarting server: Server process close detected.
+[17:28:39][MONITOR] Restarting server: Server process close detected.
+[17:28:43][MONITOR] Restarting server: Server process close detected.
+[17:28:46][MONITOR] Restarting server: Server process close detected.
+[17:28:50][MONITOR] Restarting server: Server process close detected.
+[17:28:53][MONITOR] Restarting server: Server process close detected.
+[17:28:56][MONITOR] Restarting server: Server process close detected.
+[17:28:59][MONITOR] Restarting server: Server process close detected.
+[17:29:02][MONITOR] Restarting server: Server process close detected.
+[17:29:05][MONITOR] Restarting server: Server process close detected.
+[17:29:08][MONITOR] Restarting server: Server process close detected.
+[17:29:10][Foca_Geralio] executed "STOP SERVER"
+[17:29:11][MONITOR] Restarting server: Server process close detected.
+[17:30:15][Foca_Geralio] executed "START SERVER"
+[17:30:18][MONITOR] Restarting server: Server process close detected.
+[17:30:21][MONITOR] Restarting server: Server process close detected.
+[17:30:24][MONITOR] Restarting server: Server process close detected.
+[17:30:28][MONITOR] Restarting server: Server process close detected.
+[17:30:31][MONITOR] Restarting server: Server process close detected.
+[17:30:33][Foca_Geralio] executed "STOP SERVER"
+[17:30:34][MONITOR] Restarting server: Server process close detected.
+[17:37:20][Foca_Geralio] executed "START SERVER"
+[17:37:22][MONITOR] Restarting server: Server process close detected.
+[17:37:26][MONITOR] Restarting server: Server process close detected.
+[17:37:29][MONITOR] Restarting server: Server process close detected.
+[17:37:32][MONITOR] Restarting server: Server process close detected.
+[17:37:35][MONITOR] Restarting server: Server process close detected.
+[17:37:35][Foca_Geralio] executed "STOP SERVER"
+[17:37:38][MONITOR] Restarting server: Server process close detected.
+[17:37:42][MONITOR] Restarting server: Server process close detected.
+[17:37:45][MONITOR] Restarting server: Server process close detected.
+[17:37:48][MONITOR] Restarting server: Server process close detected.
+[17:37:51][MONITOR] Restarting server: Server process close detected.
+[17:37:54][MONITOR] Restarting server: Server process close detected.
+[17:37:57][MONITOR] Restarting server: Server process close detected.
+[17:38:00][MONITOR] Restarting server: Server process close detected.
+[17:38:04][MONITOR] Restarting server: Server process close detected.
+[17:38:07][MONITOR] Restarting server: Server process close detected.
+[17:38:10][MONITOR] Restarting server: Server process close detected.
+[17:38:13][MONITOR] Restarting server: Server process close detected.
+[17:38:16][MONITOR] Restarting server: Server process close detected.
+[17:38:19][MONITOR] Restarting server: Server process close detected.
+[17:38:23][MONITOR] Restarting server: Server process close detected.
+[17:38:26][MONITOR] Restarting server: Server process close detected.
+[17:38:29][MONITOR] Restarting server: Server process close detected.
+[17:38:32][MONITOR] Restarting server: Server process close detected.
+[17:38:35][MONITOR] Restarting server: Server process close detected.
+[17:38:38][MONITOR] Restarting server: Server process close detected.
+[17:38:41][MONITOR] Restarting server: Server process close detected.
+[17:38:45][MONITOR] Restarting server: Server process close detected.
+[17:38:48][MONITOR] Restarting server: Server process close detected.
+[17:38:51][MONITOR] Restarting server: Server process close detected.
+[17:38:54][MONITOR] Restarting server: Server process close detected.
+[17:38:57][MONITOR] Restarting server: Server process close detected.
+[17:39:00][MONITOR] Restarting server: Server process close detected.
+[17:39:04][MONITOR] Restarting server: Server process close detected.
+[17:39:07][MONITOR] Restarting server: Server process close detected.
+[17:39:10][MONITOR] Restarting server: Server process close detected.
+[17:39:13][MONITOR] Restarting server: Server process close detected.
+[17:39:16][MONITOR] Restarting server: Server process close detected.
+[17:39:20][MONITOR] Restarting server: Server process close detected.
+[17:39:23][MONITOR] Restarting server: Server process close detected.
+[17:39:26][MONITOR] Restarting server: Server process close detected.
+[17:39:29][MONITOR] Restarting server: Server process close detected.
+[17:39:32][MONITOR] Restarting server: Server process close detected.
+[17:39:35][MONITOR] Restarting server: Server process close detected.
+[17:39:38][MONITOR] Restarting server: Server process close detected.
+[17:39:42][MONITOR] Restarting server: Server process close detected.
+[17:39:45][MONITOR] Restarting server: Server process close detected.
+[17:39:48][MONITOR] Restarting server: Server process close detected.
+[17:39:51][MONITOR] Restarting server: Server process close detected.
+[17:39:54][MONITOR] Restarting server: Server process close detected.
+[17:39:57][MONITOR] Restarting server: Server process close detected.
+[17:40:01][MONITOR] Restarting server: Server process close detected.
+[17:40:04][MONITOR] Restarting server: Server process close detected.
+[17:40:07][MONITOR] Restarting server: Server process close detected.
+[17:40:10][MONITOR] Restarting server: Server process close detected.
+[17:40:13][MONITOR] Restarting server: Server process close detected.
+[17:40:16][MONITOR] Restarting server: Server process close detected.
+[17:40:20][MONITOR] Restarting server: Server process close detected.
+[17:40:23][MONITOR] Restarting server: Server process close detected.
+[17:40:26][MONITOR] Restarting server: Server process close detected.
+[17:40:29][MONITOR] Restarting server: Server process close detected.
+[17:40:32][MONITOR] Restarting server: Server process close detected.
+[17:40:35][MONITOR] Restarting server: Server process close detected.
+[17:40:38][MONITOR] Restarting server: Server process close detected.
+[17:40:41][MONITOR] Restarting server: Server process close detected.
+[17:40:45][MONITOR] Restarting server: Server process close detected.
+[17:40:48][MONITOR] Restarting server: Server process close detected.
+[17:40:51][MONITOR] Restarting server: Server process close detected.
+[17:40:54][MONITOR] Restarting server: Server process close detected.
+[17:40:57][MONITOR] Restarting server: Server process close detected.
+[17:41:00][MONITOR] Restarting server: Server process close detected.
+[17:41:03][MONITOR] Restarting server: Server process close detected.
+[17:41:07][MONITOR] Restarting server: Server process close detected.
+[17:41:10][MONITOR] Restarting server: Server process close detected.
+[17:41:13][MONITOR] Restarting server: Server process close detected.
+[17:41:16][MONITOR] Restarting server: Server process close detected.
+[17:41:19][MONITOR] Restarting server: Server process close detected.
+[17:41:22][MONITOR] Restarting server: Server process close detected.
+[17:41:25][MONITOR] Restarting server: Server process close detected.
+[17:41:28][MONITOR] Restarting server: Server process close detected.
+[17:41:32][MONITOR] Restarting server: Server process close detected.
+[17:41:35][MONITOR] Restarting server: Server process close detected.
+[17:41:38][MONITOR] Restarting server: Server process close detected.
+[17:41:41][MONITOR] Restarting server: Server process close detected.
+[17:41:44][MONITOR] Restarting server: Server process close detected.
+[17:41:47][MONITOR] Restarting server: Server process close detected.
+[17:41:50][MONITOR] Restarting server: Server process close detected.
+[17:41:54][MONITOR] Restarting server: Server process close detected.
+[17:41:57][MONITOR] Restarting server: Server process close detected.
+[17:42:00][MONITOR] Restarting server: Server process close detected.
+[17:42:03][MONITOR] Restarting server: Server process close detected.
+[17:42:06][MONITOR] Restarting server: Server process close detected.
+[17:42:09][MONITOR] Restarting server: Server process close detected.
+[17:42:12][MONITOR] Restarting server: Server process close detected.
+[17:42:16][MONITOR] Restarting server: Server process close detected.
+[17:42:19][MONITOR] Restarting server: Server process close detected.
+[17:42:22][MONITOR] Restarting server: Server process close detected.
+[17:42:25][MONITOR] Restarting server: Server process close detected.
+[17:42:28][MONITOR] Restarting server: Server process close detected.
+[17:42:31][MONITOR] Restarting server: Server process close detected.
+[17:42:34][MONITOR] Restarting server: Server process close detected.
+[17:42:38][MONITOR] Restarting server: Server process close detected.
+[17:42:41][MONITOR] Restarting server: Server process close detected.
+[17:42:44][MONITOR] Restarting server: Server process close detected.
+[17:42:47][MONITOR] Restarting server: Server process close detected.
+[17:42:50][MONITOR] Restarting server: Server process close detected.
+[17:42:53][MONITOR] Restarting server: Server process close detected.
+[17:42:57][MONITOR] Restarting server: Server process close detected.
+[17:43:00][MONITOR] Restarting server: Server process close detected.
+[17:43:03][MONITOR] Restarting server: Server process close detected.
+[17:43:06][MONITOR] Restarting server: Server process close detected.
+[17:43:09][MONITOR] Restarting server: Server process close detected.
+[17:43:12][MONITOR] Restarting server: Server process close detected.
+[17:43:16][MONITOR] Restarting server: Server process close detected.
+[17:43:19][MONITOR] Restarting server: Server process close detected.
+[17:43:22][MONITOR] Restarting server: Server process close detected.
+[17:43:25][MONITOR] Restarting server: Server process close detected.
+[17:43:28][MONITOR] Restarting server: Server process close detected.
+[17:43:31][MONITOR] Restarting server: Server process close detected.
+[17:43:35][MONITOR] Restarting server: Server process close detected.
+[17:43:38][MONITOR] Restarting server: Server process close detected.
+[17:43:41][MONITOR] Restarting server: Server process close detected.
+[17:43:44][MONITOR] Restarting server: Server process close detected.
+[17:43:47][MONITOR] Restarting server: Server process close detected.
+[17:43:50][MONITOR] Restarting server: Server process close detected.
+[17:43:54][MONITOR] Restarting server: Server process close detected.
+[17:43:57][MONITOR] Restarting server: Server process close detected.
+[17:44:00][MONITOR] Restarting server: Server process close detected.
+[17:44:03][MONITOR] Restarting server: Server process close detected.
+[17:44:06][MONITOR] Restarting server: Server process close detected.
+[17:44:09][MONITOR] Restarting server: Server process close detected.
+[17:44:13][MONITOR] Restarting server: Server process close detected.
+[17:44:17][MONITOR] Restarting server: Server process close detected.
+[17:44:20][MONITOR] Restarting server: Server process close detected.
+[17:44:23][MONITOR] Restarting server: Server process close detected.
+[17:44:26][MONITOR] Restarting server: Server process close detected.
+[17:44:29][MONITOR] Restarting server: Server process close detected.
+[17:44:32][MONITOR] Restarting server: Server process close detected.
+[17:44:36][MONITOR] Restarting server: Server process close detected.
+[17:44:39][MONITOR] Restarting server: Server process close detected.
+[17:44:42][MONITOR] Restarting server: Server process close detected.
+[17:44:45][MONITOR] Restarting server: Server process close detected.
+[17:44:48][MONITOR] Restarting server: Server process close detected.
+[17:44:52][MONITOR] Restarting server: Server process close detected.
+[17:44:55][MONITOR] Restarting server: Server process close detected.
+[17:44:58][MONITOR] Restarting server: Server process close detected.
+[17:45:01][MONITOR] Restarting server: Server process close detected.
+[17:45:04][MONITOR] Restarting server: Server process close detected.
+[17:45:07][MONITOR] Restarting server: Server process close detected.
+[17:45:10][MONITOR] Restarting server: Server process close detected.
+[17:45:14][MONITOR] Restarting server: Server process close detected.
+[17:45:17][MONITOR] Restarting server: Server process close detected.
+[17:45:20][MONITOR] Restarting server: Server process close detected.
+[17:45:23][MONITOR] Restarting server: Server process close detected.
+[17:45:26][MONITOR] Restarting server: Server process close detected.
+[17:45:30][MONITOR] Restarting server: Server process close detected.
+[17:49:07][Foca_Geralio] executed "RESTART SERVER"
+[17:50:54][Foca_Geralio] executed "RESTART SERVER"
+[17:51:36][Foca_Geralio] executed "RESTART SERVER"
+[17:53:00][Foca_Geralio] executed "RESTART SERVER"
+[18:00:35][Foca_Geralio] executed "RESTART SERVER"
+[18:12:16][Foca_Geralio] executed "RESTART SERVER"
+[18:32:40][Foca_Geralio] Refreshed resources
+[18:32:42][Foca_Geralio] Ensured resource "qbx_spawn"
+[18:32:45][Foca_Geralio] executed "RESTART SERVER"
+[18:49:27][Foca_Geralio] Refreshed resources
+[18:49:29][Foca_Geralio] Ensured resource "qbx_garages"
+[18:54:20][Foca_Geralio] executed "RESTART SERVER"
+[19:01:01][Foca_Geralio] Refreshed resources
+[19:01:03][Foca_Geralio] Ensured resource "qbx_vehicles"
+[19:01:12][Foca_Geralio] executed "RESTART SERVER"
+[19:08:30][Foca_Geralio] Refreshed resources
+[19:08:31][Foca_Geralio] Ensured resource "qbx_hud"
+[19:13:30][Foca_Geralio] Refreshed resources
+[19:13:32][Foca_Geralio] Ensured resource "qbx_loading"
+[19:13:35][Foca_Geralio] Ensured resource "qbx_vehicleshop-main"
+[19:18:23][Foca_Geralio] executed "RESTART SERVER"
+[19:32:17][Foca_Geralio] Refreshed resources
+[19:32:19][Foca_Geralio] Ensured resource "illenium-appearance"
+[19:32:27][Foca_Geralio] executed "RESTART SERVER"
