@@ -1,132 +1,108 @@
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <link rel="stylesheet" type="text/css" href="styles.css"/>
-        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.13.0/css/all.css"/>
-        <link href="https://cdn.jsdelivr.net/npm/quasar@2.1.0/dist/quasar.prod.css" rel="stylesheet" type="text/css"/>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css"/>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/quasar@2.1.0/dist/quasar.umd.prod.js" defer></script>
-        <script src="app.js" defer></script>
-    </head>
-    <!-- This is where you want to replace with your audio -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOTA CERIA - Loading Screen</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <audio id="audio" loop></audio>
 
-    <audio id="audio"></audio>
+    <!-- Interactive Background Slideshow -->
+    <div class="bg-slideshow" id="bg-slideshow">
+        <div class="bg-image active" style="background-image: url('assets/images/1.png')"></div>
+        <div class="bg-image" style="background-image: url('assets/images/2.png')"></div>
+        <div class="bg-image" style="background-image: url('assets/images/3.png')"></div>
+        <div class="bg-image" style="background-image: url('assets/images/4.png')"></div>
+    </div>
 
-    <body>
-        <div id="loading-main" style="min-height: auto;">
+    <!-- Overlays -->
+    <div class="background">
+        <div class="gradient-overlay"></div>
+        <div class="overlay-pattern"></div>
+        <div id="particles-container"></div>
+    </div>
 
-            <!-- Uncomment q-parallax and comment out q-carousel if you want to use a video background instead -->
-
-            <q-carousel animated v-model="slidesImageCarousel" :autoplay="slidesCarouselAutoplay" ref="carousel" infinite>
-                <q-carousel-slide :name="index" :img-src="slide.image" v-for="(slide, index) in slides"></q-carousel-slide>
-            </q-carousel>
-
-            <!-- This is where you want to replace with your video -->
-
-            <!--
-            <q-parallax :height="1080">
-                <template v-slot:media>
-                    <video id="video" width="1920" height="1080" autoplay loop muted>
-                    <source type="video/mp4" src="assets/video/freestockvideo.mp4"></video>
-                </template>
-            </q-parallax>
-            -->
-
-            <div class="glass-panel absolute-top q-pa-xl" style="top: 10%; left: 50%; transform: translateX(-50%); width: 80vw; border-radius: 20px;">
-                <q-card flat style="width: auto; background: transparent;">
-                    <q-card-section class="row items-center no-wrap">
-                        <q-carousel animated infinite v-model="slidesTextCarousel" :autoplay="slidesCarouselAutoplay" transition-next="fade" transition-prev="fade" class="bg-transparent text-white" style="height: 150px;">
-                            <q-carousel-slide :name="index" class="column no-wrap flex-center" v-for="(slide, index) in slides">
-                                <div style="width: 30vw; white-space: pre-wrap; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);" class="text-left text-h4">
-                                    {{ slide.text }}
-                                </div>
-                                <div style="opacity: 0.9; width: 30vw; white-space: pre-wrap; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);" class="text-left text-h6 q-mt-sm">
-                                    {{ slide.subText }}
-                                </div>
-                            </q-carousel-slide>
-                        </q-carousel>
-                        <q-space></q-space>
-                        <q-carousel animated style="width: 35vw; height: 180px;" infinite v-model="keybindsCarousel" :autoplay="keybindsCarouselAutoplay" transition-next="fade" transition-prev="fade" control-color="white" arrows padding class="bg-transparent text-white">
-                            <q-carousel-slide :name="index" class="column no-wrap flex-center" v-for="(page, index) in keybinds">
-                                <div style="width: 30vw; white-space: pre-wrap; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);" class="text-center text-h6">
-                                    {{ keybindTitle }}
-                                </div>
-                                <div class="q-mt-md text-center">
-                                    <q-btn :ripple="false" flat stack v-for="keybind in page" class="q-ma-xs glass-btn">
-                                        <div class="keybind-key">{{ keybind.key }}</div>
-                                        <div style="font-size: 11px; font-weight: bold;">
-                                            {{ keybind.label }}
-                                        </div>
-                                    </q-btn>
-                                </div>
-                            </q-carousel-slide>
-                        </q-carousel>
-                    </q-card-section>
-                </q-card>
+    <div class="content-wrapper">
+        <div class="header">
+            <div class="server-logo">
+                <img src="assets/images/logo.png" alt="Kota Ceria Logo" class="logo-image">
+                <div class="logo-text">
+                    <h1>KOTA CERIA</h1>
+                    <p>ROLEPLAY SERVER</p>
+                </div>
             </div>
-
-            <div class="glass-bottom-bar absolute-bottom q-pa-xl" style="bottom: 5%; left: 50%; transform: translateX(-50%); width: 80vw; border-radius: 20px;">
-                <q-card flat style="width: auto; background: transparent;">
-                    <q-card-section class="row items-center no-wrap">
-                        
-                        <div class="brand-text">KOTA CERIA</div>
-                        
-                        <q-space></q-space>
-                        <div class="loadingbar">
-                            <div class="loadbar"><div class="thingy"></div></div>
-                        </div>
-                        <q-btn icon="settings_suggest" color="bgbutton" @click="settings = true" class="glass-btn" style="margin-left: 20px;"></q-btn>
-                    </q-card-section>
-                </q-card>
+            
+            <div class="top-controls">
+                <button class="glass-btn interactive-btn" id="btn-keybinds">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Kontrol</span>
+                </button>
+                <div class="audio-toggle interactive-btn" id="btn-audio">
+                    <i class="fas fa-volume-up" id="audio-icon"></i>
+                    <span>Musik (Spasi)</span>
+                </div>
             </div>
-
-            <q-dialog no-shake v-model="download" position="bottom">
-                <q-card style="max-width: 400px; margin-left: 50vw; margin-bottom: 13vh;">
-                    <q-card-section>
-                        <div style="white-space: pre-wrap;" class="text-h6">
-                            {{ downloadCardTitle }}
-                        </div>
-                    </q-card-section>
-
-                    <q-card-section style="white-space: pre-wrap;" class="q-pt-none text-weight-bold">
-                        {{ downloadCardDescription }}
-                    </q-card-section>
-
-                    <q-card-actions align="left">
-                        <q-btn flat label="Hide details" color="detailbutton" v-close-popup></q-btn>
-                    </q-card-actions>
-                </q-card>
-            </q-dialog>
-
-            <q-dialog no-shake v-model="settings" position="right">
-                <q-card style="max-width: 300px; margin-right: 3.4vw; top: 20vh!important;">
-                    <q-card-section class="row items-center q-pb-none">
-                        <div style="white-space: pre-wrap;" class="text-h6">
-                            {{ settingsCardTitle }}
-                        </div>
-                        <q-space></q-space>
-                        <q-btn icon="close" flat round dense v-close-popup></q-btn>
-                    </q-card-section>
-
-                    <q-card-section style="padding-top: 0px;">
-                        <q-toggle v-model="playAudio" size="lg" checked-icon="headset" keep-color color="togglecolor" label="Audio-track Enabled" unchecked-icon="headset_off" onclick="toggleAudio()"></q-toggle>
-                        <div style="white-space: pre-wrap;" class="text-h7 text-weight-medium q-mb-md-d">
-                            {{ audioTrackDescription }}
-                        </div>
-                        <q-toggle v-model="slidesCarouselAutoplay" size="lg" checked-icon="view_carousel" keep-color color="togglecolor" label="Auto-play Enabled" unchecked-icon="image"></q-toggle>
-                        <div style="white-space: pre-wrap;" class="text-h7 text-weight-medium q-mb-md-d">
-                            {{ playAudioDescription }}
-                        </div>
-                        <q-toggle v-model="playVideo" size="lg" checked-icon="play_arrow" keep-color color="togglecolor" label="Play-video Enabled" unchecked-icon="play_disabled" onclick="toggleVideo()"></q-toggle>
-                        <div style="white-space: pre-wrap;" class="text-h7 text-weight-medium q-mb-md-d">
-                            {{ playVideoDescription }}
-                        </div>
-                    </q-card-section>
-                </q-card>
-            </q-dialog>
         </div>
-    </body>
+
+        <div class="main-content">
+            <!-- Left Info Card -->
+            <div class="info-section">
+                <div class="info-card" id="dynamic-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-star" id="card-icon"></i>
+                    </div>
+                    <h3 id="card-title">Selamat Datang di Kota Ceria!</h3>
+                    <p id="card-desc">Gunakan akal sehat saat ber-Roleplay. Dilarang keras melakukan hal-hal yang melanggar aturan kota.</p>
+                </div>
+            </div>
+
+            <!-- Slideshow Controls -->
+            <div class="slider-controls">
+                <button class="nav-btn" id="prev-slide"><i class="fas fa-chevron-left"></i></button>
+                <div class="slide-indicators" id="slide-indicators">
+                    <span class="dot active" data-index="0"></span>
+                    <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                    <span class="dot" data-index="3"></span>
+                </div>
+                <button class="nav-btn" id="next-slide"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="loading-stats">
+                <div class="status-text" id="status-text">Memuat Aset...</div>
+                <div class="percentage" id="percentage">0%</div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress-glow"></div>
+                </div>
+            </div>
+            <div class="tips-carousel" id="tips-carousel">
+                <p>Tip: Gunakan /report jika menemukan pelanggaran di dalam kota.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Keybinds -->
+    <div class="modal-overlay" id="modal-keybinds">
+        <div class="modal-content glass-panel">
+            <button class="close-btn" id="close-modal"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <i class="fas fa-gamepad"></i>
+                <h2>Tombol Interaksi</h2>
+            </div>
+            <div class="keybinds-grid" id="keybinds-container">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
 </html>
