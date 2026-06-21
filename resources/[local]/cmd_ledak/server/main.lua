@@ -32,20 +32,14 @@ local function isAdmin(source)
     return IsPlayerAceAllowed(source, 'command')
 end
 
+-- Gunakan `true` sebagai parameter ke-3:
+-- FiveM secara native akan mengecek ACE `command.ledak`
+-- yang diwarisi dari `add_ace group.admin command allow` di server.cfg
+-- Pemain non-admin akan langsung ditolak oleh engine, tidak perlu pengecekan manual.
 RegisterCommand('ledak', function(source, args)
     -- Tolak eksekusi dari console server (source == 0)
     if source == 0 then
         print('[cmd_ledak] Command ini hanya bisa dijalankan oleh pemain dalam game.')
-        return
-    end
-
-    -- Validasi ACE Permission — hanya group.admin yang boleh
-    if not isAdmin(source) then
-        TriggerClientEvent('chat:addMessage', source, {
-            color = { 255, 50, 50 },
-            multiline = true,
-            args = { '[cmd_ledak]', 'Kamu tidak memiliki izin untuk menggunakan command ini.' }
-        })
         return
     end
 
@@ -64,7 +58,7 @@ RegisterCommand('ledak', function(source, args)
         return
     end
 
-    -- Clamp radius agar server tidak dieksploitasi
+    -- Clamp radius & damage agar server tidak dieksploitasi
     radius = math.max(1.0, math.min(radius, 100.0))
     damage = math.max(0.0, math.min(damage, 10000.0))
 
@@ -75,4 +69,4 @@ RegisterCommand('ledak', function(source, args)
     local playerName = GetPlayerName(source)
     print(('[cmd_ledak] %s (ID: %d) memicu ledakan | Tipe: %s (%d) | Radius: %.1f | Damage: %.1f')
         :format(playerName, source, EXPLOSION_TYPES[explosionType] or 'Unknown', explosionType, radius, damage))
-end, false) -- false = tidak perlu ACE di sini, kita validasi manual di atas
+end, true) -- true = FiveM native ACE enforcement: butuh command.ledak (inherit dari group.admin)
