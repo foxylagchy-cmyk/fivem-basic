@@ -6,3 +6,4 @@ cache/
 # Sensitif (Jangan diunggah jika repository bersifat publik)
 server.cfg
 server.cfg.bkp
+server-engine
