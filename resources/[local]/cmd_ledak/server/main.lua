@@ -32,10 +32,6 @@ local function isAdmin(source)
     return IsPlayerAceAllowed(source, 'command')
 end
 
--- Gunakan `true` sebagai parameter ke-3:
--- FiveM secara native akan mengecek ACE `command.ledak`
--- yang diwarisi dari `add_ace group.admin command allow` di server.cfg
--- Pemain non-admin akan langsung ditolak oleh engine, tidak perlu pengecekan manual.
 RegisterCommand('ledak', function(source, args)
     -- Tolak eksekusi dari console server (source == 0)
     if source == 0 then

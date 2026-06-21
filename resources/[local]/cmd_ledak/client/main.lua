@@ -25,44 +25,67 @@ TriggerEvent('chat:addSuggestion', '/ledak', 'Membuat ledakan di posisi karakter
 
 -- Menerima event dari server setelah validasi admin sukses
 RegisterNetEvent('cmd_ledak:client:spawnExplosion', function(explosionType, radius, damage)
-    -- Pastikan event hanya bisa dipicu dari server, bukan klien lain
-    -- (FiveM secara native tidak mengizinkan TriggerClientEvent antar klien, tapi ini sebagai defensive check)
-
     local ped    = PlayerPedId()
     local coords = GetEntityCoords(ped)
 
-    -- Fade layar untuk efek dramatis sebelum ledakan
-    DoScreenFadeOut(150)
+    -- damageScale harus dalam range 0.0 - 1.0 (bukan nilai damage mentah)
+    -- damage dari server sudah di-clamp 0-10000, kita normalisasi ke 0.0-1.0
+    local damageScale = math.min(damage / 1000.0, 1.0)
 
-    Citizen.SetTimeout(200, function()
-        -- Native GTA V: AddExplosion(x, y, z, type, damage, isAudible, isInvis, cameraShake, noDamage)
-        -- isAudible = true  → suara ledakan terdengar
-        -- isInvis   = false → efek visual muncul
-        -- noDamage  = false → damage nyata diterapkan
-        AddExplosion(
-            coords.x,
-            coords.y,
-            coords.z,
-            explosionType,
-            damage,
-            true,   -- isAudible
-            false,  -- isInvis
-            radius, -- cameraShake sekaligus radius efek visual di beberapa versi
-            false   -- noDamage
-        )
+    -- Lindungi pemain dari self-damage SEBELUM ledakan ditembakkan.
+    -- SetEntityInvincible bekerja di level engine (lebih rendah dari god mode script),
+    -- sehingga bypass AddExplosion tidak bisa membunuh caster.
+    SetEntityInvincible(ped, true)
 
-        -- Fade kembali setelah ledakan
-        Citizen.SetTimeout(300, function()
-            DoScreenFadeIn(500)
-        end)
+    -- AddExplosion(x, y, z, type, damageScale, isAudible, isInvis, cameraShake, noDamage)
+    AddExplosion(
+        coords.x,
+        coords.y,
+        coords.z,
+        explosionType,
+        damageScale,
+        true,         -- isAudible: suara ledakan dari engine
+        false,        -- isInvis: visual aktif
+        radius * 0.1, -- cameraShake: skala proporsional dari radius
+        false         -- noDamage: damage tetap berlaku untuk NPC/pemain lain
+    )
 
-        -- Notifikasi di chat klien
-        TriggerEvent('chat:addMessage', {
-            color = { 255, 100, 0 },
-            multiline = false,
-            args = { '[cmd_ledak]', ('💥 Ledakan tipe %d diaktifkan!'):format(explosionType) }
-        })
+    -- Pastikan suara ledakan terdengar dengan memainkan sound eksplisit
+    PlaySoundFromCoord(-1, 'EXPLOSION', coords.x, coords.y, coords.z, 'DLC_HEIST_BIOLAB_FINALE_SOUNDS', false, 0, false)
+
+    -- Padamkan api di ped SEGERA setelah ledakan (sebelum fire damage sempat berjalan)
+    StopFireOnEntity(ped)
+
+    -- Monitor selama 3 detik: padamkan api & pulihkan HP jika masih terbakar
+    -- Fire damage bisa delay beberapa frame, jadi satu timeout tidak cukup
+    local elapsed = 0
+    Citizen.CreateThread(function()
+        while elapsed < 3000 do
+            Citizen.Wait(100)
+            elapsed = elapsed + 100
+
+            if IsEntityOnFire(ped) then
+                StopFireOnEntity(ped)
+            end
+
+            -- Jaga HP tetap penuh selama window perlindungan
+            local maxHp = GetEntityMaxHealth(ped)
+            if GetEntityHealth(ped) < maxHp then
+                SetEntityHealth(ped, maxHp)
+            end
+        end
+
+        -- Setelah 3 detik: matikan invincible, pastikan api benar-benar padam
+        SetEntityInvincible(ped, false)
+        StopFireOnEntity(ped)
     end)
+
+    -- Notifikasi di chat klien
+    TriggerEvent('chat:addMessage', {
+        color = { 255, 100, 0 },
+        multiline = false,
+        args = { '[cmd_ledak]', ('💥 Ledakan tipe %d diaktifkan!'):format(explosionType) }
+    })
 end)
 
 -- Command lokal untuk menampilkan hint saja (tidak memicu ledakan)
