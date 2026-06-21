@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "general": {
+    "serverName": "KotaCeria"
+  },
+  "server": {
+    "dataPath": "F:/SERVER GTA ALL/txData/FiveMBasicServerCFXDefault_37B628.base/"
+  }
+}
