@@ -1096,3 +1096,143 @@ const baseplateHud = {
 const app4 = Vue.createApp(baseplateHud);
 app4.use(Quasar);
 app4.mount("#baseplate-container");
+
+// Draggable Menu Logic & Edit Mode Logic
+$(document).ready(function() {
+  const dragHandle = document.getElementById('menu-drag-handle');
+  const menu = document.getElementById('openmenu');
+  if (dragHandle && menu) {
+    let isDragging = false;
+    let startX, startY, initialLeft, initialTop;
+
+    // Restore position from localStorage
+    const savedLeft = localStorage.getItem('menuPosLeft');
+    const savedTop = localStorage.getItem('menuPosTop');
+    if (savedLeft && savedTop) {
+      menu.style.left = savedLeft;
+      menu.style.top = savedTop;
+    }
+
+    dragHandle.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      const rect = menu.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      menu.style.left = (initialLeft + dx) + 'px';
+      menu.style.top = (initialTop + dy) + 'px';
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (isDragging) {
+        isDragging = false;
+        localStorage.setItem('menuPosLeft', menu.style.left);
+        localStorage.setItem('menuPosTop', menu.style.top);
+      }
+    });
+  }
+
+  // Edit Mode Logic
+  let editModeActive = false;
+  window.toggleEditMode = function() {
+    editModeActive = !editModeActive;
+    if (editModeActive) {
+      $('#edit-overlay').fadeIn();
+      $('#openmenu').fadeOut(); // Hide menu while editing
+      $.post("https://qbx_hud/closeMenu"); // Hide cursor
+    }
+  }
+
+  window.saveEditMode = function() {
+    editModeActive = false;
+    $('#edit-overlay').fadeOut();
+    $('#openmenu').fadeIn();
+    
+    // Calculate new map offset positions
+    const mapBox = document.getElementById('map-drag-box');
+    const windowW = window.innerWidth;
+    const windowH = window.innerHeight;
+    
+    const rect = mapBox.getBoundingClientRect();
+    let normX = rect.left / windowW;
+    let normY = rect.top / windowH;
+
+    $.post("https://qbx_hud/saveMapPosition", JSON.stringify({
+        x: normX,
+        y: normY
+    }));
+  }
+
+  // Generic Drag for Edit Mode Boxes
+  const dragBoxes = document.querySelectorAll('.drag-box');
+  let activeDragBox = null;
+  let dragStartX, dragStartY, dragInitLeft, dragInitTop;
+
+  dragBoxes.forEach(box => {
+    box.addEventListener('mousedown', function(e) {
+      activeDragBox = this;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      const r = activeDragBox.getBoundingClientRect();
+      dragInitLeft = r.left;
+      dragInitTop = r.top;
+      e.preventDefault();
+    });
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!activeDragBox) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    
+    activeDragBox.style.left = (dragInitLeft + dx) + 'px';
+    activeDragBox.style.top = (dragInitTop + dy) + 'px';
+    activeDragBox.style.bottom = 'auto'; // override bottom
+
+    // Move the actual HUD simultaneously
+    if (activeDragBox.id === 'hud-drag-box') {
+      const hud = document.getElementById('playerHud');
+      if (hud) {
+        hud.style.position = 'absolute';
+        hud.style.left = (dragInitLeft + dx) + 'px';
+        hud.style.top = (dragInitTop + dy) + 'px';
+        hud.style.bottom = 'auto';
+        localStorage.setItem('hudPosLeft', hud.style.left);
+        localStorage.setItem('hudPosTop', hud.style.top);
+      }
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (activeDragBox) {
+      activeDragBox = null;
+    }
+  });
+
+  // Restore HUD position on load
+  const savedHudLeft = localStorage.getItem('hudPosLeft');
+  const savedHudTop = localStorage.getItem('hudPosTop');
+  const hud = document.getElementById('playerHud');
+  if (savedHudLeft && savedHudTop && hud) {
+    hud.style.position = 'absolute';
+    hud.style.left = savedHudLeft;
+    hud.style.top = savedHudTop;
+    hud.style.bottom = 'auto';
+    
+    // Sync drag box
+    const hudBox = document.getElementById('hud-drag-box');
+    if (hudBox) {
+      hudBox.style.left = savedHudLeft;
+      hudBox.style.top = savedHudTop;
+      hudBox.style.bottom = 'auto';
+    }
+  }
+});

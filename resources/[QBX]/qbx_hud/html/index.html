@@ -53,6 +53,7 @@
             </div>
         <div id="openmenu">
             <div id="menu">
+                <div id="menu-drag-handle">≡ DRAG MENU ≡</div>
                 <q-splitter v-model="splitterModel" style="height: 50vh;">
                     <template v-slot:before>
                         <q-tabs v-model="tab" active-bg-color="active-tab" inline-label indicator-color="transparent" vertical class="text-tabcolor bg-panel">
@@ -63,8 +64,10 @@
                         <q-tab-panels v-model="tab" animated swipeable vertical transition-prev="jump-up" transition-next="jump-up" class="bg-active-tab">
                             <q-tab-panel name="hud">
                                 <div class="q-mb-md">
-                                    <div class="text-h6 q-mb-md">Reset Hud <img class="brand-logo" align="right" src="./brand-logo.svg"></img></div>
+                                    <div class="text-h6 q-mb-md" style="color: cyan!important; text-shadow: 0 0 5px cyan;">Settings & Options</div>
                                     <div class="q-pa-md q-gutter-sm">
+                                        <q-btn onclick="toggleEditMode()" text-color="textbutton" color="bgbutton" style="width: 150px; background: rgba(0, 255, 255, 0.4)!important; border: 1px solid cyan; box-shadow: 0 0 10px cyan;"> Edit Layout </q-btn>
+                                        <div class="text-h7 q-mb-md">Move your HUD and Minimap anywhere on the screen!</div>
                                         <q-btn v-on:click="resetStorage($event)" :loading="progress[0].loading" :percentage="progress[0].percentage" text-color="textbutton" color="bgbutton" @click="startComputing(0)" style="width: 150px"> Reset Settings
                                         <template v-slot:loading> <q-spinner-gears class="on-left"></q-spinner-gears> Resetting... </template></q-btn>
                                         <div class="text-h7 q-mb-md">If you want to reset your settings back to default; click this shiny button! <br> (you will have to relog for your menu to reset changes successfully)</div>
@@ -187,6 +190,10 @@
                 </q-splitter>
             </div>
         </div>
+        <div id="server-watermark" v-show="show">
+            <img src="logo.png" alt="Logo">
+            <h1>KOTA CERIA</h1>
+        </div>
         <div id="main-container">
             <div id="money-container">
                 <div id="money-cash">
@@ -205,103 +212,126 @@
                 </div>
             </div>
             <div id="ui-container">
-                <div id="playerHud" v-show="show">
+                <div id="playerHud" v-show="show" class="linear-hud">
                     <transition name="fade">
-                    <div v-if="showVoice">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" :style="{color: talkingColor}" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="voice" size="50px" :thickness="0.24" :style="{color: talkingColor}" :min="0" :max="5" center-color="grey-10">
-                        <q-icon style="top: -0.5px; left: 0px;" :name="voiceIcon" size="19.5px" color="white"/>
+                    <div v-if="showVoice" class="hud-item" :class="{ 'talking': talkingColor === '#FF0000' }">
+                        <div class="hud-icon"><q-icon :name="voiceIcon" color="white"/></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill" :style="{ width: (voice/5)*100 + '%', background: talkingColor }"></div>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showHealth">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" :style="{color: healthColor}" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="health" size="50px" :thickness="0.24" :style="{color: healthColor}" :min="0" :max="100" center-color="grey-10">
-                        <q-icon style="top: -0.5px; left: -0.4px;" name="fas fa-heart" size="19.5px" color="white"/>
+                    <div v-if="showHealth" class="hud-item">
+                        <div class="hud-icon" :style="{ background: healthColor }"><q-icon name="fas fa-heart" color="white"/></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill" :style="{ width: health + '%', background: healthColor }"></div>
+                            <span class="hud-value">{{Math.round(health)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showArmor">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" :style="{color: armorColor}" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="armor" size="50px" :thickness="0.24" :style="{color: armorColor}" :min="0" :max="100" center-color="grey-10">
-                        <q-icon name="fas fa-shield-alt" size="19.5px" color="white"/>
+                    <div v-if="showArmor" class="hud-item">
+                        <div class="hud-icon" :style="{ background: armorColor }"><q-icon name="fas fa-shield-alt" color="white"/></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill" :style="{ width: armor + '%', background: armorColor }"></div>
+                            <span class="hud-value">{{Math.round(armor)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showHunger">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" :style="{color: hungerColor}" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="hunger" size="50px" :thickness="0.24" :style="{color: hungerColor}" :min="0" :max="100" center-color="grey-10">
-                        <q-icon style="top: -1px; left: -0.5px;" name="fas fa-hamburger" size="19.5px" color="white"/>
+                    <div v-if="showHunger" class="hud-item">
+                        <div class="hud-icon" :style="{ background: hungerColor }"><q-icon name="fas fa-hamburger" color="white"/></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill" :style="{ width: hunger + '%', background: hungerColor }"></div>
+                            <span class="hud-value">{{Math.round(hunger)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showThirst">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" :style="{color: thirstColor}" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="thirst" size="50px" :thickness="0.24" :style="{color: thirstColor}" :min="0" :max="100" center-color="grey-10">
-                        <q-icon style="top: -0.5px; left: -0.5px;" name="fas fa-tint" size="19.5px" color="white"/>
+                    <div v-if="showThirst" class="hud-item">
+                        <div class="hud-icon" :style="{ background: thirstColor }"><q-icon name="fas fa-tint" color="white"/></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill" :style="{ width: thirst + '%', background: thirstColor }"></div>
+                            <span class="hud-value">{{Math.round(thirst)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showStress">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" color="stress" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="stress" size="50px" :thickness="0.24" color="stress" :min="0" :max="100" center-color="grey-10">
-                        <q-icon style="top: -0.5px; left: -0.5px;" name="fas fa-brain" size="19.5px" color="white"/>
+                    <div v-if="showStress" class="hud-item">
+                        <div class="hud-icon stress-icon"><q-icon name="fas fa-brain" /></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill stress-fill" :style="{ width: stress + '%' }"></div>
+                            <span class="hud-value">{{Math.round(stress)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showOxygen">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" color="oxygen" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="oxygen" size="50px" :thickness="0.24" color="oxygen" :min="0" :max="100" center-color="grey-10">
-                        <q-icon style="top: -2px; left: -0.1px;" name="fas fa-lungs" size="19.5px" color="white"/>
+                    <div v-if="showOxygen" class="hud-item">
+                        <div class="hud-icon oxygen-icon"><q-icon name="fas fa-lungs" /></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill oxygen-fill" :style="{ width: oxygen + '%' }"></div>
+                            <span class="hud-value">{{Math.round(oxygen)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showArmed">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" color="armed" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="static" size="50px" :thickness="0.24" color="armed" :min="0" :max="100" center-color="grey-10">
-                        <q-icon name="fas fa-stream" size="19.5px" color="white"/>
+                    <div v-if="showArmed" class="hud-item">
+                        <div class="hud-icon armed-icon"><q-icon name="fas fa-stream" /></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill armed-fill" style="width: 100%;"></div>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showParachute">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" color="parachute" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="parachute" size="50px" :thickness="0.24" color="parachute" :min="0" :max="2" center-color="grey-10">
-                        <q-icon name="fas fa-parachute-box" size="23px" color="white"/>
+                    <div v-if="showParachute" class="hud-item">
+                        <div class="hud-icon parachute-icon"><q-icon name="fas fa-parachute-box" /></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill parachute-fill" style="width: 100%;"></div>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showEngine">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" :style="{color: engineColor}" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="engine" size="50px" :thickness="0.24" :style="{color: engineColor}" :min="0" :max="100" center-color="grey-10">
-                        <q-icon style="top: -1px;" name="fas fa-oil-can" size="19.5px":style="{color: engineColor}"/>
+                    <div v-if="showEngine" class="hud-item">
+                        <div class="hud-icon" :style="{ background: engineColor }"><q-icon name="fas fa-oil-can" color="white"/></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill" :style="{ width: engine + '%', background: engineColor }"></div>
+                            <span class="hud-value">{{Math.round(engine)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showHarness">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" color="harness" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="hp" size="50px" :thickness="0.24" color="harness" :min="0" :max="100" center-color="grey-10">
-                        <q-icon name="fas fa-user-slash" size="19.5px" color="white"/>
+                    <div v-if="showHarness" class="hud-item">
+                        <div class="hud-icon harness-icon"><q-icon name="fas fa-user-slash" /></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill harness-fill" :style="{ width: hp + '%' }"></div>
+                            <span class="hud-value">{{Math.round(hp)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showCruise">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" color="cruise" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="speed" size="50px" :thickness="0.24" color="cruise" :min="0" :max="100" center-color="grey-10">
-                        <q-icon style="top: -1.5px;" name="fas fa-tachometer-alt-fast" size="19.5px" color="white"/>
+                    <div v-if="showCruise" class="hud-item">
+                        <div class="hud-icon cruise-icon"><q-icon name="fas fa-tachometer-alt-fast" /></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill cruise-fill" style="width: 100%;"></div>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showNos">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" color="nos" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="nos" size="50px" :thickness="0.24" color="nos" :min="0" :max="100" center-color="grey-10">
-                        <q-icon name="fas fa-meteor" size="19.5px" :style="{color: nosColor}"/>
+                    <div v-if="showNos" class="hud-item">
+                        <div class="hud-icon" :style="{ background: nosColor }"><q-icon name="fas fa-meteor" color="white"/></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill" :style="{ width: nos + '%', background: nosColor }"></div>
+                            <span class="hud-value">{{Math.round(nos)}}%</span>
+                        </div>
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showDev">
-                        <q-circular-progress class="q-ml-xl" style="opacity: 40%;" :value="static" size="50px" :thickness="0.24" color="dev" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="left: -50%;" show-value :value="static" size="50px" :thickness="0.24" color="dev" :min="0" :max="100" center-color="grey-10">
-                        <q-icon name="fas fa-terminal" size="19.5px" color="white"/>
+                    <div v-if="showDev" class="hud-item">
+                        <div class="hud-icon dev-icon"><q-icon name="fas fa-terminal" /></div>
+                        <div class="hud-bar-container">
+                            <div class="hud-bar-fill dev-fill" style="width: 100%;"></div>
+                        </div>
                     </div>
                     </transition>
                 </div>
@@ -337,6 +367,16 @@
                         <div class="circle" v-if="showCircle"></div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- EDIT MODE OVERLAY -->
+        <div id="edit-overlay" style="display: none;">
+            <div id="save-layout-btn" onclick="saveEditMode()">SAVE LAYOUT</div>
+            <div id="hud-drag-box" class="drag-box" style="left: 2vw; bottom: 5vh; width: 250px; height: 150px;">
+                <div class="drag-header">DRAG HUD</div>
+            </div>
+            <div id="map-drag-box" class="drag-box" style="left: 1vw; bottom: 3vh; width: 300px; height: 200px;">
+                <div class="drag-header">DRAG MAP</div>
             </div>
         </div>
     </body>

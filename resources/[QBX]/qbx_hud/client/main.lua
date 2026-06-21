@@ -24,6 +24,8 @@ local showSquareB = false
 local CinematicHeight = 0.2
 local w = 0
 local hasWeapon = false
+local userMapX = 0.0
+local userMapY = 0.0
 
 DisplayRadar(false)
 
@@ -75,6 +77,10 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     Wait(2000)
     local hudSettings = GetResourceKvpString('hudSettings')
     if hudSettings then loadSettings(json.decode(hudSettings)) end
+    local savedX = GetResourceKvpFloat('userMapX')
+    if savedX ~= 0.0 then userMapX = savedX end
+    local savedY = GetResourceKvpFloat('userMapY')
+    if savedY ~= 0.0 then userMapY = savedY end
     stress = QBX.PlayerData.metadata.stress
     hunger = QBX.PlayerData.metadata.hunger
     thirst = QBX.PlayerData.metadata.thirst
@@ -86,6 +92,10 @@ AddEventHandler('onResourceStart', function(resourceName)
     Wait(2000)
     local hudSettings = GetResourceKvpString('hudSettings')
     if hudSettings then loadSettings(json.decode(hudSettings)) end
+    local savedX = GetResourceKvpFloat('userMapX')
+    if savedX ~= 0.0 then userMapX = savedX end
+    local savedY = GetResourceKvpFloat('userMapY')
+    if savedY ~= 0.0 then userMapY = savedY end
 end)
 
 -- Callbacks & Events
@@ -141,6 +151,16 @@ end)
 RegisterNUICallback('resetStorage', function(_, cb)
     Wait(50)
     TriggerEvent('hud:client:resetStorage')
+    cb('ok')
+end)
+
+RegisterNUICallback('saveMapPosition', function(data, cb)
+    Wait(50)
+    userMapX = data.x - 0.01
+    userMapY = (0.7 - data.y)
+    SetResourceKvpFloat('userMapX', userMapX)
+    SetResourceKvpFloat('userMapY', userMapY)
+    TriggerEvent('hud:client:LoadMap')
     cb('ok')
 end)
 
@@ -279,16 +299,16 @@ RegisterNetEvent('hud:client:LoadMap', function()
         -- 0.0 = nav symbol and icons left
         -- 0.1638 = nav symbol and icons stretched
         -- 0.216 = nav symbol and icons raised up
-        SetMinimapComponentPosition('minimap', 'L', 'B', 0.0 + minimapOffset, -0.047, 0.1638, 0.183)
+        SetMinimapComponentPosition('minimap', 'L', 'B', 0.0 + minimapOffset + userMapX, -0.047 + userMapY, 0.1638, 0.183)
 
         -- icons within map
-        SetMinimapComponentPosition('minimap_mask', 'L', 'B', 0.0 + minimapOffset, 0.0, 0.128, 0.20)
+        SetMinimapComponentPosition('minimap_mask', 'L', 'B', 0.0 + minimapOffset + userMapX, 0.0 + userMapY, 0.128, 0.20)
 
         -- -0.01 = map pulled left
         -- 0.025 = map raised up
         -- 0.262 = map stretched
         -- 0.315 = map shorten
-        SetMinimapComponentPosition('minimap_blur', 'L', 'B', -0.01 + minimapOffset, 0.025, 0.262, 0.300)
+        SetMinimapComponentPosition('minimap_blur', 'L', 'B', -0.01 + minimapOffset + userMapX, 0.025 + userMapY, 0.262, 0.300)
         SetBlipAlpha(GetNorthRadarBlip(), 0)
         SetBigmapActive(true, false)
         SetMinimapClipType(0)
@@ -313,16 +333,16 @@ RegisterNetEvent('hud:client:LoadMap', function()
         -- -0.0100 = nav symbol and icons left
         -- 0.180 = nav symbol and icons stretched
         -- 0.258 = nav symbol and icons raised up
-        SetMinimapComponentPosition('minimap', 'L', 'B', -0.0100 + minimapOffset, -0.030, 0.180, 0.258)
+        SetMinimapComponentPosition('minimap', 'L', 'B', -0.0100 + minimapOffset + userMapX, -0.030 + userMapY, 0.180, 0.258)
 
         -- icons within map
-        SetMinimapComponentPosition('minimap_mask', 'L', 'B', 0.200 + minimapOffset, 0.0, 0.065, 0.20)
+        SetMinimapComponentPosition('minimap_mask', 'L', 'B', 0.200 + minimapOffset + userMapX, 0.0 + userMapY, 0.065, 0.20)
 
         -- -0.00 = map pulled left
         -- 0.015 = map raised up
         -- 0.252 = map stretched
         -- 0.338 = map shorten
-        SetMinimapComponentPosition('minimap_blur', 'L', 'B', -0.00 + minimapOffset, 0.015, 0.252, 0.338)
+        SetMinimapComponentPosition('minimap_blur', 'L', 'B', -0.00 + minimapOffset + userMapX, 0.015 + userMapY, 0.252, 0.338)
         SetBlipAlpha(GetNorthRadarBlip(), 0)
         SetMinimapClipType(1)
         SetBigmapActive(true, false)

@@ -321,7 +321,8 @@ if isServer then
             end
 
             if ped then
-                SetPedIntoVehicle(ped, veh, -1)
+                -- Safely warp ped to prevent server crash if entity state is locked
+                pcall(SetPedIntoVehicle, ped, veh, -1)
             end
 
             if not pcall(function()
