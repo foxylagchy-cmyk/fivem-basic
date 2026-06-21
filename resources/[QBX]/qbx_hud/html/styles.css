@@ -96,11 +96,11 @@ div#q-loading-bar { display: none!important; } /* makes sure there's no ajax loa
 
 /* Player HUD */
 
-#playerhud {
+#playerHud {
   position: absolute;
   display: flex;
-  left: 3vh;
-  bottom: 0.2vw;
+  left: 1.5vw;
+  bottom: 25vh; /* Shifted up to not overlap minimap */
 }
 
 .q-ml-xl {
