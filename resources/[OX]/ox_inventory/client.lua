@@ -1710,69 +1710,21 @@ RegisterNUICallback('giveItem', function(data, cb)
 
     if usingItem then return end
 
-	if client.giveplayerlist then
-		local coords = cache.vehicle and GetWorldPositionOfEntityBone(playerPed, 0) or GetEntityCoords(playerPed)
+    client.closeInventory()
+    
+    local input = lib.inputDialog('Berikan Barang', {
+        {type = 'number', label = 'Kantong Berapa (Server ID)?', description = 'Masukkan ID pemain yang ingin kamu beri barang', required = true, icon = 'hashtag'},
+    })
 
-		local nearbyPlayers = lib.getNearbyPlayers(coords, 3.0)
-        local nearbyCount = #nearbyPlayers
+    if not input or not input[1] then return end
 
-		if nearbyCount == 0 then return end
-
-        if nearbyCount == 1 then
-			local option = nearbyPlayers[1]
-
-            if not isGiveTargetValid(option.ped, option.coords) then return end
-
-            return giveItemToTarget(GetPlayerServerId(option.id), data.slot, data.count)
-        end
-
-        local giveList, n = {}, 0
-
-		for i = 1, #nearbyPlayers do
-			local option = nearbyPlayers[i]
-
-            if isGiveTargetValid(option.ped, option.coords) then
-				option.id = GetPlayerServerId(option.id)
-				local playerName = Utils.getPlayerName(option.id)
-                ---@diagnostic disable-next-line: inject-field
-				option.label = playerName
-				n += 1
-				giveList[n] = option
-			end
-		end
-
-        if n == 0 then return end
-
-		lib.registerMenu({
-			id = 'ox_inventory:givePlayerList',
-			title = 'Give item',
-			options = giveList,
-		}, function(selected)
-            giveItemToTarget(giveList[selected].id, data.slot, data.count)
-        end)
-
-		return lib.showMenu('ox_inventory:givePlayerList')
-	end
-
-    if cache.vehicle then
-		local seats = GetVehicleMaxNumberOfPassengers(cache.vehicle) - 1
-
-		if seats >= 0 then
-			local passenger = GetPedInVehicleSeat(cache.vehicle, cache.seat - 2 * (cache.seat % 2) + 1)
-
-			if passenger ~= 0 and IsEntityVisible(passenger) then
-                return giveItemToTarget(GetPlayerServerId(NetworkGetPlayerIndexFromPed(passenger)), data.slot, data.count)
-			end
-		end
-
-        return
-	end
-
-    local entity = Utils.Raycast(1|2|4|8|16, GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 3.0, 0.5), 0.2)
-
-    if entity and IsPedAPlayer(entity) and IsEntityVisible(entity) and #(GetEntityCoords(playerPed, true) - GetEntityCoords(entity, true)) < 3.0 then
-        return giveItemToTarget(GetPlayerServerId(NetworkGetPlayerIndexFromPed(entity)), data.slot, data.count)
+    local targetId = tonumber(input[1])
+    
+    if targetId == cache.serverId then
+        return lib.notify({type = 'error', description = 'Kamu tidak bisa memberi barang ke diri sendiri!'})
     end
+
+    return giveItemToTarget(targetId, data.slot, data.count)
 end)
 
 RegisterNUICallback('useButton', function(data, cb)
