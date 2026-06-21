@@ -49,12 +49,7 @@ const audioIcon = document.getElementById("audio-icon");
 const btnAudio = document.getElementById("btn-audio");
 
 const audioFiles = [
-    "assets/audio/ambientgold.mp3",
-    "assets/audio/chimes.mp3",
-    "assets/audio/daze.mp3",
-    "assets/audio/galaxy.mp3",
-    "assets/audio/highwaynights.mp3",
-    "assets/audio/meteorbinge.mp3",
+    "assets/audio/kingdominblue.mp3",
 ];
 
 audio.src = audioFiles[Math.floor(Math.random() * audioFiles.length)];
