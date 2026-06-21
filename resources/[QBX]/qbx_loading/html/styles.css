@@ -1,19 +1,55 @@
 /* Customize style for dialog menus and carousels here */
 
 :root {
-    --brand-color: #f1e542;
+    --brand-color: #00d2ff; /* Cyan/Blue gradient vibe */
 }
 
-.brand-logo {
-    width: 14% !important;
+/* Glassmorphism Classes */
+.glass-panel {
+    background: rgba(20, 20, 20, 0.45);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-bottom-bar {
+    background: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glass-btn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+.brand-text {
+    font-size: 3rem;
+    font-weight: 900;
+    font-style: italic;
+    background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 10px rgba(0, 210, 255, 0.4);
+    letter-spacing: 2px;
 }
 
 .text-detailbutton {
-    color: rgb(103, 108, 111) !important;
+    color: rgb(150, 150, 150) !important;
 }
 
 .bg-bgbutton {
-    background: rgb(103, 108, 111) !important;
+    background: transparent !important;
 }
 
 .text-togglecolor {
@@ -21,7 +57,7 @@
 }
 
 .loadingbar {
-    width: 27% !important;
+    width: 40% !important;
     height: auto !important;
     padding: 20px !important;
     padding-left: 0px !important;
@@ -29,22 +65,27 @@
 }
 
 .loadbar {
-    width: auto;
-    height: 1.5vh;
-    background: rgb(103, 108, 111);
-    box-shadow: 0 1px 5px #0003, 0 2px 2px #00000024, 0 3px 1px -2px #0000001f;
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
     z-index: 9999;
+    overflow: hidden;
 }
 
 .thingy {
-    width: auto;
-    height: 1.5vh;
-    background: var(--brand-color);
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.8);
+    transition: width 0.3s ease;
     z-index: 9999;
 }
 
 .q-carousel {
-    background: rgb(0, 0, 0) !important;
+    background: transparent !important;
     height: auto !important;
 }
 

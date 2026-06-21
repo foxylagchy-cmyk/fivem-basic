@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "general": {
+    "serverName": "Kota Ceria"
+  },
+  "server": {
+    "dataPath": "c:/Users/Gustyx-Power/Documents/Project/fivem-basic/"
+  }
+}

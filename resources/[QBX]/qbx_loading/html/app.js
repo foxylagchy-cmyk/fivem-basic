@@ -7,56 +7,56 @@ const load = Vue.createApp({
         return {
             slides: [
                 {
-                    text: "You can add/remove items, vehicles, jobs & gangs through the shared folder.",
-                    subText: "Photo captured by: Markyoo#8068",
+                    text: "Selamat Datang di Kota Ceria Roleplay!",
+                    subText: "Gunakan akal sehat saat ber-Roleplay. Dilarang keras melakukan hal-hal yang melanggar aturan kota.",
                     image: "assets/images/1.png",
                 },
                 {
-                    text: "Find any issues or want to suggest feature requests? Head to our github and create an issue!",
-                    subText: "Photo captured by: ihyajb#9723",
+                    text: "Butuh Bantuan atau Ingin Bertanya?",
+                    subText: "Silakan gunakan command /report di dalam game, atau buka tiket di Discord kami.",
                     image: "assets/images/2.png",
                 },
                 {
-                    text: "All server-specific adjustments can be made in the config.lua files throughout the build.",
-                    subText: "Photo captured by: FLAPZ[INACTIV]#9925",
+                    text: "Sistem Keuangan & Pekerjaan yang Realistis",
+                    subText: "Jadilah mekanik, polisi, dokter, atau bahkan jalani hidup di sisi gelap. Pilihan ada di tanganmu.",
                     image: "assets/images/3.png",
                 },
                 {
-                    text: "For additional support please join our community at discord.gg/qbox",
-                    subText: "Photo captured by: Robinerino#1312",
+                    text: "Bergabunglah dengan Komunitas Discord Kami!",
+                    subText: "discord.gg/kotaceria - Dapatkan informasi terbaru, event, dan giveaway.",
                     image: "assets/images/4.png",
                 },
             ],
 
-            downloadCardTitle: "Downloading Qbox Server",
-            downloadCardDescription: "Hold tight while we begin downloading all the resources/assets required to play on QBox Server. \n\nAfter download has been finished successfully, you'll be placed into the server and this screen will disappear. Please don't leave or turn off your PC. ",
+            downloadCardTitle: "Loading Kota Ceria...",
+            downloadCardDescription: "Mohon tunggu sebentar, kami sedang menyiapkan aset, kendaraan, dan dunia untukmu.\n\nJangan tutup gamenya, kamu akan otomatis masuk ke kota setelah loading selesai. Siapkan mentalmu!",
 
-            settingsCardTitle: "Settings",
-            audioTrackDescription: "When disabled the current audio-track playing will be stopped.",
-            playAudioDescription: "When disabled carousel images will stop cycling and remain on the last shown.",
-            playVideoDescription: "When disabled video will stop playing and remain paused.",
+            settingsCardTitle: "Pengaturan Loading",
+            audioTrackDescription: "Matikan ini jika kamu tidak ingin mendengar musik latar belakang.",
+            playAudioDescription: "Matikan ini jika kamu ingin gambar tidak berganti secara otomatis.",
+            playVideoDescription: "Matikan ini jika kamu ingin menghentikan video latar belakang.",
 
-            keybindTitle: "Default Keybinds",
+            keybindTitle: "Tombol Default",
 
             keybinds: [
                 [
-                    { key: "TAB", label: "Open Inventory" },
-                    { key: "`", label: "Cycle Proximity" },
-                    { key: "M", label: "Open Phone" },
-                    { key: "B", label: "Toggle Seat Belt" },
-                    { key: "L ALT", label: "Open Target Menu" },
-                    { key: "F1", label: "Radial Menu" },
-                    { key: "I", label: "Open Hud Menu" },
-                    { key: "L ALT", label: "Talk Over Radio" },
+                    { key: "TAB", label: "Buka Tas (Inventory)" },
+                    { key: "~", label: "Jarak Suara (Proximity)" },
+                    { key: "M", label: "Buka HP" },
+                    { key: "B", label: "Sabuk Pengaman" },
+                    { key: "L ALT", label: "Menu Interaksi (Mata)" },
+                    { key: "F1", label: "Menu Radial" },
+                    { key: "I", label: "Menu HUD" },
+                    { key: "CAPS", label: "Bicara di Radio" },
                 ],
                 [
-                    { key: "L", label: "Vehicle Locks" },
-                    { key: "G", label: "Toggle Engine" },
-                    { key: "B", label: "Pointer Emote" },
-                    { key: "HOME", label: "Open Scoreboard" },
-                    { key: "Z", label: "Keybind Slots" },
-                    { key: "X", label: "Hands Up Emote" },
-                    { key: "NUM", label: "Use Item Slots" },
+                    { key: "L", label: "Kunci Kendaraan" },
+                    { key: "G", label: "Mesin Kendaraan" },
+                    { key: "X", label: "Angkat Tangan" },
+                    { key: "HOME", label: "Daftar Pemain" },
+                    { key: "U", label: "Ragdoll (Pingsan)" },
+                    { key: "K", label: "Buka Bagasi" },
+                    { key: "1-5", label: "Gunakan Item" },
                     { key: "Y", label: "Cruise Control" },
                 ],
             ],
@@ -116,6 +116,13 @@ function toggleVideo() {
         video.pause();
     }
 }
+
+// Bikin interaktif: Tekan Spasi untuk mutar/matikan musik
+window.addEventListener("keydown", function(event) {
+    if (event.code === "Space") {
+        toggleAudio();
+    }
+});
 
 const handlers = {
     loadProgress({ loadFraction }) {
