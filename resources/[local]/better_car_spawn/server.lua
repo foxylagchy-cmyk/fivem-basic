@@ -37,6 +37,36 @@ lib.addCommand('spawncar', {
     TriggerClientEvent('better_car_spawn:spawnVehicle', source, model)
 end)
 
+lib.addCommand('spawnveh', {
+    help = 'Spawn kendaraan tanpa langsung naik (Admin Only)',
+    params = {
+        { name = 'model', help = 'Nama/model kendaraan' },
+    },
+    restricted = 'group.admin'
+}, function(source, args)
+    if not args or not args.model then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 0, 0},
+            args = {"System", "Gunakan: /spawnveh [model]"}
+        })
+        return
+    end
+
+    local model = args.model
+    local playerPed = GetPlayerPed(source)
+    
+    if not playerPed or playerPed == 0 then
+        TriggerClientEvent('chat:addMessage', source, {
+            color = {255, 0, 0},
+            args = {"System", "Error: Tidak dapat menemukan player ped"}
+        })
+        return
+    end
+
+    -- Trigger client untuk spawn tanpa warp
+    TriggerClientEvent('better_car_spawn:spawnVehicleNoWarp', source, model)
+end)
+
 -- Callback untuk set owner dan keys
 RegisterNetEvent('better_car_spawn:vehicleSpawned', function(netId)
     local source = source
