@@ -67,15 +67,11 @@ lib.callback.register('qbx_core:server:createCharacter', function(source, data)
     local success = Login(source, nil, newData)
     if not success then return end
 
-    -- FIXED: Delay starter items until AFTER spawn selection
-    -- Mark player to receive starter items after they spawn
-    if GetResourceState('qbx_spawn'):find('start') then
-        TriggerEvent('qbx_spawn:server:setPendingStarterItems', source)
-        print('[qbx_core] New character - starter items will be given after spawn')
-    else
-        -- Fallback: give immediately if qbx_spawn not running
-        giveStarterItems(source)
-    end
+    -- COMPLETELY DISABLED auto starter items for new characters
+    -- Items will be given ONLY after spawn via qbx_spawn:server:onSpawnComplete
+    -- This prevents race condition with spawn selector
+    TriggerEvent('qbx_spawn:server:setPendingStarterItems', source)
+    print('[qbx_core] New character - starter items will be given after spawn')
 
     lib.print.info(('%s has created a character'):format(GetPlayerName(source)))
     return newData

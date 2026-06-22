@@ -298,20 +298,35 @@ RegisterNetEvent('qb-spawn:client:openUI', function(firstSpawn)
 end)
 
 -- AUTO-FIX: Listen for character loaded event dan auto-trigger spawn selector
+-- Listen to multiple events to catch new character creation
+local hasTriggeredSpawn = false
+
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    print('[qbx_spawn] Player loaded event detected')
+    if hasTriggeredSpawn then return end
+    print('[qbx_spawn] OnPlayerLoaded event detected')
     
-    -- Check if we're stuck at black screen (no camera active)
-    Wait(2000) -- Wait 2 seconds untuk ensure character fully loaded
+    Wait(2000)
     
     if not DoesCamExist(previewCam) and not spawns then
-        print('[qbx_spawn] Player loaded but no spawn selector shown - Auto-triggering')
-        
-        -- Check if screen is faded out (typical after character creation)
-        if not IsScreenFadedIn() then
-            print('[qbx_spawn] Screen faded out detected - Character baru!')
-            TriggerEvent('qb-spawn:client:setupSpawns')
-        end
+        print('[qbx_spawn] Auto-triggering spawn selector')
+        hasTriggeredSpawn = true
+        TriggerEvent('qb-spawn:client:setupSpawns')
+    end
+end)
+
+RegisterNetEvent('QBCore:Player:SetPlayerData', function(playerData)
+    if hasTriggeredSpawn then return end
+    if not playerData then return end
+    
+    print('[qbx_spawn] SetPlayerData event detected')
+    
+    -- Check if this is a new character (no last position yet)
+    Wait(2000)
+    
+    if not DoesCamExist(previewCam) and not spawns and not IsScreenFadedIn() then
+        print('[qbx_spawn] New character detected - Auto-triggering spawn selector')
+        hasTriggeredSpawn = true
+        TriggerEvent('qb-spawn:client:setupSpawns')
     end
 end)
 
