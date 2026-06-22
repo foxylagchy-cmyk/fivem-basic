@@ -1,0 +1,80 @@
+╔═══════════════════════════════════════════════════════════════╗
+║          QUICK FIX SUMMARY - KotaCeria FiveM Server          ║
+║                     Date: June 22, 2026                       ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✅ FIXES APPLIED:
+
+[1] PEFCL DISABLED
+    → File: resources/[QBX]/pefcl/.disabled created
+    → Reason: Konflik dengan QBX banking system
+    → Alternative: Use qb-banking-main
+
+[2] NPWD TABLES COMMENTED
+    → File: resources/[QBX]/qbx_core/config/server.lua
+    → Lines 71-80: All npwd_* tables commented out
+    → Reason: NPWD not installed
+
+[3] QBX_NPWD DISABLED
+    → File: resources/[QBX]/qbx_npwd/.disabled created
+    → Reason: Main NPWD resource not found
+    → Alternative: Use qbx_phone
+
+[4] UNUSED TABLES COMMENTED
+    → File: resources/[QBX]/qbx_core/config/server.lua
+    → player_mails: Commented out
+    → bank_accounts_new: Commented out
+    → properties: Kept (used by qbx_houses)
+
+[5] SPAWN SELECTOR FIXED
+    → File: resources/[QBX]/qbx_spawn/client/main.lua
+    → Added: Missing event handler qb-spawn:client:openUI
+    → Result: Spawn selector now appears for new characters!
+
+[6] OX_INVENTORY PEFCL DISABLED
+    → File: resources/[OX]/ox_inventory/server.lua
+    → Line 6: require 'modules.pefcl.server' commented out
+
+[7] HEAL COMMANDS CREATED
+    → Location: resources/[local]/cmd_heal/
+    → Commands: /healme, /heal [id], /heal all
+    → Features: Health, Armor, Hunger, Thirst restoration
+
+═══════════════════════════════════════════════════════════════
+
+🚀 NEXT STEPS:
+
+1. RESTART SERVER
+   → quit (in console)
+   → Start server again
+
+2. TEST IN-GAME
+   → Create new character
+   → Check spawn selector (should appear now!)
+   → Test /healme command
+   → Test inventory & banking
+
+3. CHECK CONSOLE
+   ✓ No PEFCL errors
+   ✓ No NPWD warnings
+   ✓ All resources started
+
+═══════════════════════════════════════════════════════════════
+
+📝 FILES MODIFIED: 3
+   ✏️ ox_inventory/server.lua
+   ✏️ qbx_core/config/server.lua
+   ✏️ qbx_spawn/client/main.lua
+
+🛑 RESOURCES DISABLED: 2
+   ❌ pefcl (konflik)
+   ❌ qbx_npwd (dependency missing)
+
+➕ NEW FEATURES: 1
+   ✨ cmd_heal (Admin heal commands)
+
+═══════════════════════════════════════════════════════════════
+
+For detailed information, see: FIXES_APPLIED.md
+
+═══════════════════════════════════════════════════════════════

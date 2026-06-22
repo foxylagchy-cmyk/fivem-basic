@@ -1,0 +1,68 @@
+╔═══════════════════════════════════════════════════════════════╗
+║              🔧 QUICK FIX - STOP ERRORS NOW!                  ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Error yang muncul:
+❌ pefcl:getMyCash timeout
+❌ pefcl:getAccounts timeout  
+❌ qbx_npwd: No such export setPhoneDisabled
+
+══════════════════════════════════════════════════════════════
+
+🚀 SOLUSI CEPAT (Di Console Server):
+
+1. Ketik command ini satu per satu:
+
+   stop pefcl
+   stop qbx_npwd
+   restart [QBX]
+   restart [OX]
+
+2. Tunggu sampai semua resource restart
+
+3. Error seharusnya hilang! ✅
+
+══════════════════════════════════════════════════════════════
+
+📝 PENJELASAN:
+
+• PEFCL = Banking system yang konflik dengan QBX
+  → Sudah di-disable via fxmanifest.lua
+  → Tapi perlu manual stop di console
+
+• qbx_npwd = Phone bridge yang butuh NPWD main resource
+  → NPWD tidak ada di server
+  → Sudah di-disable via fxmanifest.lua
+  → Tapi perlu manual stop di console
+
+══════════════════════════════════════════════════════════════
+
+✅ HASIL SETELAH FIX:
+
+Console akan bersih:
+✓ No PEFCL timeout errors
+✓ No qbx_npwd export errors
+✓ All QBX resources running smooth
+✓ Banking via qb-banking-main (bukan PEFCL)
+✓ Phone via qbx_phone (bukan NPWD)
+
+══════════════════════════════════════════════════════════════
+
+⚠️ JIKA MASIH ERROR SETELAH STOP:
+
+Restart FULL SERVER:
+1. Ketik: quit
+2. Start server lagi
+3. Check console
+
+══════════════════════════════════════════════════════════════
+
+💡 UNTUK PERMANENT FIX:
+
+File-file ini sudah di-update untuk disable resources:
+✅ resources/[QBX]/pefcl/fxmanifest.lua
+✅ resources/[QBX]/qbx_npwd/fxmanifest.lua
+
+Setelah restart full, resources ini tidak akan load lagi!
+
+══════════════════════════════════════════════════════════════

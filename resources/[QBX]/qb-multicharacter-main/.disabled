@@ -1,0 +1,8 @@
+This resource is disabled because qbx_core has built-in multicharacter system.
+
+Running both qb-multicharacter-main and qbx_core character selection causes conflicts.
+
+Use qbx_core's built-in multicharacter instead.
+
+Disabled on: 2026-06-22
+Reason: Conflict with qbx_core character selection / spawn system

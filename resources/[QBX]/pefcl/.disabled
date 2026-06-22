@@ -1,0 +1,6 @@
+This resource is disabled because it conflicts with QBX Core banking system.
+PEFCL is not compatible with QBX Framework.
+Use qb-banking-main or qbx_banking instead.
+
+Disabled on: 2026-06-22
+Reason: UnhandledPromiseRejectionWarning - Database tables missing

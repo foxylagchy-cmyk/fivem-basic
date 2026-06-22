@@ -230,6 +230,10 @@ local function inputHandler()
             end
 
             DoScreenFadeIn(1000)
+            
+            -- Notify server that spawn is complete (for starter items)
+            TriggerServerEvent('qbx_spawn:server:onSpawnComplete')
+            print('[qbx_spawn] Spawn complete - notified server')
 
             break
         end
@@ -241,9 +245,13 @@ local function inputHandler()
 end
 
 RegisterNetEvent('qb-spawn:client:setupSpawns', function()
+    print('[qbx_spawn] setupSpawns event triggered')
+    
     spawns = {}
 
     local lastCoords, lastPropertyId = lib.callback.await('qbx_spawn:server:getLastLocation')
+    print('[qbx_spawn] Got last location:', lastCoords)
+    
     spawns[#spawns + 1] = {
         label = locale('last_location'),
         coords = lastCoords,
@@ -259,14 +267,85 @@ RegisterNetEvent('qb-spawn:client:setupSpawns', function()
         spawns[#spawns + 1] = properties[i]
     end
 
+    print('[qbx_spawn] Total spawn locations:', #spawns)
+
     Wait(400)
 
+    print('[qbx_spawn] Setting up camera and map...')
     managePlayer()
     setupCamera()
     setupMap()
 
     Wait(400)
 
+    print('[qbx_spawn] Showing spawn selector UI')
     scaleformDetails(currentButtonId)
     inputHandler()
+end)
+
+-- Handler untuk openUI yang hilang (FIX untuk karakter baru)
+RegisterNetEvent('qb-spawn:client:openUI', function(firstSpawn)
+    print('[qbx_spawn] openUI event received, firstSpawn:', firstSpawn)
+    
+    if firstSpawn then
+        -- Add delay untuk ensure everything loaded
+        Wait(1000)
+        
+        -- Trigger setup spawns untuk karakter baru
+        print('[qbx_spawn] Triggering setupSpawns for new character')
+        TriggerEvent('qb-spawn:client:setupSpawns')
+    end
+end)
+
+-- AUTO-FIX: Listen for character loaded event dan auto-trigger spawn selector
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+    print('[qbx_spawn] Player loaded event detected')
+    
+    -- Check if we're stuck at black screen (no camera active)
+    Wait(2000) -- Wait 2 seconds untuk ensure character fully loaded
+    
+    if not DoesCamExist(previewCam) and not spawns then
+        print('[qbx_spawn] Player loaded but no spawn selector shown - Auto-triggering')
+        
+        -- Check if screen is faded out (typical after character creation)
+        if not IsScreenFadedIn() then
+            print('[qbx_spawn] Screen faded out detected - Character baru!')
+            TriggerEvent('qb-spawn:client:setupSpawns')
+        end
+    end
+end)
+
+-- EMERGENCY COMMAND: Manual trigger spawn selector jika stuck
+RegisterCommand('forcespawn', function()
+    print('[qbx_spawn] Force spawn command executed')
+    TriggerEvent('qb-spawn:client:setupSpawns')
+end, false)
+
+TriggerEvent('chat:addSuggestion', '/forcespawn', 'Force trigger spawn selector (use if stuck at black screen)')
+
+-- WORKAROUND: Auto-spawn untuk new characters yang stuck di black screen
+-- Jika setelah 10 detik masih frozen dan tidak ada camera, auto-spawn ke default location
+CreateThread(function()
+    Wait(10000) -- Wait 10 seconds after resource start
+    
+    if not DoesCamExist(previewCam) and IsPedStill(cache.ped) and not IsScreenFadedIn() then
+        -- Player stuck di black screen, auto spawn ke default
+        local defaultSpawn = vec4(195.17, -933.77, 29.7, 144.5) -- Legion Square
+        
+        DoScreenFadeOut(500)
+        Wait(500)
+        
+        TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
+        TriggerEvent('QBCore:Client:OnPlayerLoaded')
+        
+        SetEntityCoords(cache.ped, defaultSpawn.x, defaultSpawn.y, defaultSpawn.z, false, false, false, false)
+        SetEntityHeading(cache.ped, defaultSpawn.w)
+        FreezeEntityPosition(cache.ped, false)
+        DisplayRadar(true)
+        
+        Wait(500)
+        DoScreenFadeIn(1000)
+        
+        print('[qbx_spawn] Auto-spawned new character to default location (black screen workaround)')
+    end
 end)
