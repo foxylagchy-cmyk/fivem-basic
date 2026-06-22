@@ -729,7 +729,7 @@ const playerHud = {
     this.listener = window.addEventListener("message", (event) => {
       if (event.data.action === "hudtick") {
         this.hudTick(event.data);
-      } 
+      }
       // else if(event.data.update) {
       //   eval(event.data.action + "(" + event.data.show + ')')
       // }
@@ -1096,6 +1096,55 @@ const baseplateHud = {
 const app4 = Vue.createApp(baseplateHud);
 app4.use(Quasar);
 app4.mount("#baseplate-container");
+
+// SERVER WATERMARK & FPS MONITOR
+const serverWatermark = {
+  data() {
+    return {
+      show: false,
+      fps: 60,
+      ping: 0,
+      packetLoss: "Low",
+      fpsColor: "#00ff00",
+      pingColor: "#00ff00",
+    };
+  },
+  destroyed() {
+    window.removeEventListener("message", this.listener);
+  },
+  mounted() {
+    this.listener = window.addEventListener("message", (event) => {
+      if (event.data.action === "fpsUpdate") {
+        this.fps = event.data.fps;
+        this.ping = event.data.ping;
+        this.packetLoss = event.data.packetLoss;
+        
+        // FPS Color
+        if (event.data.fps >= 60) {
+          this.fpsColor = "#00ff00";
+        } else if (event.data.fps >= 30) {
+          this.fpsColor = "#ffff00";
+        } else {
+          this.fpsColor = "#ff0000";
+        }
+        
+        // Ping Color
+        if (event.data.ping <= 50) {
+          this.pingColor = "#00ff00";
+        } else if (event.data.ping <= 100) {
+          this.pingColor = "#ffff00";
+        } else {
+          this.pingColor = "#ff0000";
+        }
+      } else if (event.data.action === "hudtick") {
+        this.show = event.data.show;
+      }
+    });
+  },
+};
+const app5 = Vue.createApp(serverWatermark);
+app5.use(Quasar);
+app5.mount("#server-watermark");
 
 // Draggable Menu Logic & Edit Mode Logic
 $(document).ready(function() {

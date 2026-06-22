@@ -1,6 +1,9 @@
 local config = require 'config.client'
 local sharedConfig = require 'config.shared'
-local speedMultiplier = config.useMPH and 2.23694 or 3.6
+-- FORCE KM/H - Hardcoded to fix cache issue
+local speedMultiplier = 3.6 -- KM/H multiplier (was: config.useMPH and 2.23694 or 3.6)
+print('[qbx_hud] Speed unit: KM/H (FORCED)')
+print('[qbx_hud] Speed multiplier: ' .. speedMultiplier)
 local cruiseOn = false
 local showAltitude = false
 local showSeatbelt = false
@@ -26,6 +29,10 @@ local w = 0
 local hasWeapon = false
 local userMapX = 0.0
 local userMapY = 0.0
+
+-- FPS Monitor Variables
+local currentFPS = 0
+local currentPing = 0
 
 DisplayRadar(false)
 
@@ -1090,3 +1097,63 @@ RegisterNetEvent('qbx_hud:client:hideHud', function()
         })
     end
 end)
+
+
+-- ============================================
+-- FPS MONITOR INTEGRATION
+-- ============================================
+
+-- FPS Calculation Thread
+local frameCount = 0
+local lastTime = GetGameTimer()
+
+CreateThread(function()
+    while true do
+        frameCount = frameCount + 1
+        local currentTime = GetGameTimer()
+        
+        if currentTime - lastTime >= 1000 then
+            currentFPS = frameCount
+            frameCount = 0
+            lastTime = currentTime
+        end
+        
+        Wait(0)
+    end
+end)
+
+-- Request Ping from Server
+CreateThread(function()
+    while true do
+        if LocalPlayer.state.isLoggedIn then
+            lib.callback('qbx_hud:server:getPing', false, function(ping)
+                currentPing = ping or 0
+            end)
+        end
+        Wait(1000)
+    end
+end)
+
+-- Update FPS Display
+CreateThread(function()
+    while true do
+        if LocalPlayer.state.isLoggedIn then
+            local packetLoss = "Low"
+            if currentPing > 200 then
+                packetLoss = "High"
+            elseif currentPing > 100 then
+                packetLoss = "Med"
+            end
+            
+            SendNUIMessage({
+                action = 'fpsUpdate',
+                fps = currentFPS,
+                ping = currentPing,
+                packetLoss = packetLoss,
+            })
+        end
+        Wait(500)
+    end
+end)
+
+print('[qbx_hud] FPS Monitor loaded successfully!')

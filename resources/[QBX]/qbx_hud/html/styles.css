@@ -410,9 +410,16 @@ altitude {
   top: 2vh;
   right: 2vw;
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.8vh;
+  padding: 0.5vh 1vh;
+}
+
+.watermark-logo {
+  display: flex;
   align-items: center;
   gap: 1vh;
-  padding: 0.5vh 1vh;
 }
 
 #server-watermark img {
@@ -428,6 +435,54 @@ altitude {
   color: #fff;
   text-shadow: 0 0 5px cyan, 2px 2px 0px rgba(0,0,0,0.8);
   letter-spacing: 2px;
+}
+
+/* FPS Stats - HORIZONTAL LAYOUT */
+#fps-stats {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1vh;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 0.6vh 1.5vh;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.fps-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5vh;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.6vh;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.fps-separator {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1.8vh;
+  font-weight: 300;
+}
+
+.fps-label {
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 1);
+  font-size: 1.5vh;
+}
+
+.fps-value {
+  color: #00ff00;
+  text-shadow: 0 0 8px currentColor, 2px 2px 3px rgba(0, 0, 0, 1);
+  font-weight: 900;
+  font-size: 1.7vh;
+}
+
+.fps-value.ip-value {
+  color: rgba(0, 200, 255, 0.9);
+  text-shadow: 0 0 5px cyan, 2px 2px 3px rgba(0, 0, 0, 1);
+  font-size: 1.5vh;
 }
 
 /* Draggable Menu Header */
@@ -451,3 +506,124 @@ altitude {
 #menu-drag-handle:active {
   cursor: grabbing;
 }
+
+
+/* ============================================
+   CUSTOM SPEEDOMETER - POJOK KANAN BAWAH
+   ============================================ */
+
+/* Force veh-container to bottom right corner */
+#veh-container {
+    position: fixed !important;
+    right: 2vh !important;
+    bottom: 2vh !important;
+    top: auto !important;
+    left: auto !important;
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    align-items: flex-end !important;
+    gap: 0.5vh !important;
+    z-index: 100 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+}
+
+/* Override ALL responsive classes */
+#veh-container .responsive {
+    position: relative !important;
+    right: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+}
+
+#speedometer {
+    position: relative !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#fuelgauge {
+    position: relative !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Speedometer Container */
+.speedo-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.speedo-center {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+}
+
+.speed-value {
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #00ffff;
+    text-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff, 2px 2px 5px rgba(0, 0, 0, 0.8);
+    line-height: 1;
+}
+
+.speed-unit {
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin-top: 2px;
+    letter-spacing: 1px;
+}
+
+/* Fuel Gauge Container */
+.fuel-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fuel-center {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+    gap: 4px;
+}
+
+.fuel-value {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Hide altitude and seatbelt */
+#altitudegauge,
+#seatbelt {
+    display: none !important;
+}
+

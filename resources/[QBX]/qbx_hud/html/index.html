@@ -106,8 +106,27 @@
             </div>
         </div>
         <div id="server-watermark" v-show="show">
-            <img src="logo.png" alt="Logo">
-            <h1>KOTA CERIA</h1>
+            <div class="watermark-logo">
+                <img src="logo.png" alt="Logo">
+                <h1>KOTA CERIA</h1>
+            </div>
+            <!-- FPS MONITOR - HORIZONTAL -->
+            <div id="fps-stats">
+                <span class="fps-item">
+                    <span class="fps-label">FPS:</span>
+                    <span class="fps-value" :style="{color: fpsColor}">{{fps}}</span>
+                </span>
+                <span class="fps-separator">|</span>
+                <span class="fps-item">
+                    <span class="fps-label">PING:</span>
+                    <span class="fps-value" :style="{color: pingColor}">{{ping}}ms</span>
+                </span>
+                <span class="fps-separator">|</span>
+                <span class="fps-item">
+                    <span class="fps-label">LOSS:</span>
+                    <span class="fps-value">{{packetLoss}}</span>
+                </span>
+            </div>
         </div>
         <div id="main-container">
             <div id="money-container">
@@ -251,23 +270,56 @@
                     </transition>
                 </div>
             </div>
-            <div id="veh-container">
-                <div v-show="show">
-                    <div class="responsive" id="speedometer">
-                        <q-circular-progress class="q-ml-xl" style="transform: rotate(-150deg); opacity: 60%;" :value="speedometer" size="70px" :thickness="0.21" color="gauge" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="transform: rotate(-150deg); left: -50%;" show-value :value="speed" size="70px" :thickness="0.21" color="gauge" :min="0" :max="600">
-                        <speed>{{(speed)}}</speed>
+            <div id="veh-container" style="position: fixed !important; right: 2vh !important; bottom: 2vh !important; left: auto !important; top: auto !important;">
+                <div v-show="show" style="display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 0.5vh;">
+                    <!-- SPEEDOMETER - Modern Analog Design -->
+                    <div class="responsive" id="speedometer" style="position: relative !important; margin: 0 !important;">
+                        <div class="speedo-container">
+                            <q-circular-progress 
+                                style="transform: rotate(-140deg);" 
+                                :value="speed" 
+                                size="120px" 
+                                :thickness="0.12" 
+                                color="cyan" 
+                                track-color="rgba(255,255,255,0.1)"
+                                :min="0" 
+                                :max="240">
+                            </q-circular-progress>
+                            <div class="speedo-center">
+                                <div class="speed-value">{{Math.round(speed)}}</div>
+                                <div class="speed-unit">KM/H</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="responsive" id="fuelgauge">
-                        <q-circular-progress class="q-ml-xl" style="transform: rotate(-125deg); opacity: 60%;" :value="fuelgauge" size="36px" :thickness="0.21" color="gauge" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="transform: rotate(-125deg); left: -50%;" show-value :value="fuel" size="36px" :thickness="0.21" :style="{color: fuelColor}">
-                        <q-icon name="fas fa-gas-pump" style="transform: rotate(125deg);" size="14px" color="white"/>
+                    
+                    <!-- FUEL GAUGE - Modern Analog Design -->
+                    <div class="responsive" id="fuelgauge" style="position: relative !important; margin: 0 !important;">
+                        <div class="fuel-container">
+                            <q-circular-progress 
+                                style="transform: rotate(-140deg);" 
+                                :value="fuel" 
+                                size="80px" 
+                                :thickness="0.15" 
+                                :color="fuelColor"
+                                track-color="rgba(255,255,255,0.1)"
+                                :min="0" 
+                                :max="100">
+                            </q-circular-progress>
+                            <div class="fuel-center">
+                                <q-icon name="fas fa-gas-pump" size="20px" color="white"/>
+                                <div class="fuel-value">{{Math.round(fuel)}}%</div>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <!-- ALTITUDE (untuk heli/pesawat) -->
                     <div class="responsive" id="altitudegauge" v-if="showAltitude">
                         <q-circular-progress class="q-ml-xl" style="transform: rotate(-135deg); opacity: 60%;" :value="altitudegauge" size="70px" :thickness="0.21" color="gauge" :min="0" :max="100"></q-circular-progress>
                         <q-circular-progress class="q-ml-xl" style="transform: rotate(-135deg); left: -50%;" show-value :value="altitude" size="70px" :thickness="0.21" color="gauge" :min="0" :max="750">
                         <altitude>{{(altitude)}}</altitude>
                     </div>
+                    
+                    <!-- SEATBELT WARNING -->
                     <transition name="fade">
                     <div class="responsive" id="seatbelt" v-if="showSeatbelt">
                         <q-circular-progress class="q-ml-xl" style="transform: rotate(-125deg); opacity: 60%;" size="70px" :thickness="0.21" color="gauge" :min="0" :max="100"></q-circular-progress>
@@ -275,6 +327,8 @@
                         <q-icon name="fas fa-user-slash" style="transform: rotate(125deg);" :value="seatbelt" size="21px" :style="{color: seatbeltColor}"/>
                     </div>
                     </transition>
+                    
+                    <!-- MAP BORDERS -->
                     <div class="border">
                         <div class="square" v-if="showSquare"></div>
                     </div>
