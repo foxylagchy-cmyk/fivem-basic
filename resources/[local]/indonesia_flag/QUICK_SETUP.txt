@@ -1,0 +1,95 @@
+════════════════════════════════════════════════════════════════
+  CARA CEPAT GANTI BENDERA JADI BENDERA INDONESIA
+════════════════════════════════════════════════════════════════
+
+🎯 OPSI TERCEPAT - Download Resource Jadi:
+
+1. Buka browser, cari di Google:
+   "Indonesia Flag FiveM" atau "Bendera Indonesia FiveM"
+
+2. Download dari:
+   - forum.cfx.re
+   - GitHub (cari: fivem indonesia flag)
+   - GTA5-Mods.com
+
+3. Extract ke folder: resources/[local]/
+
+4. Tambahkan di server.cfg:
+   ensure indonesia_flag
+
+5. Restart server
+
+
+════════════════════════════════════════════════════════════════
+
+📦 OPSI 2 - Buat Sendiri (Butuh Gambar):
+
+1. Siapkan gambar bendera Indonesia:
+   - Format: PNG
+   - Ukuran: 1024x512 pixels (atau 512x256)
+   - Gambar: Merah di atas, Putih di bawah
+   - Background: Transparan (alpha channel)
+
+2. Buat folder 'stream' di sini:
+   resources/[local]/indonesia_flag/stream/
+
+3. Taruh file PNG dengan nama-nama ini:
+   - prop_flag_us.png
+   - prop_flag_us_s.png
+   - prop_flag_usboat.png
+
+4. FiveM akan otomatis convert PNG ke texture
+
+5. Restart resource:
+   restart indonesia_flag
+
+
+════════════════════════════════════════════════════════════════
+
+🔧 OPSI 3 - Gunakan OpenIV (Advanced):
+
+1. Download OpenIV: https://openiv.com/
+
+2. Buka GTA V di OpenIV
+
+3. Extract texture bendera yang ada:
+   x64e.rpf/levels/gta5/props/flags/
+
+4. Edit texture dengan Photoshop/GIMP:
+   - Ganti dengan warna merah-putih Indonesia
+
+5. Save sebagai .ytd file
+
+6. Taruh di folder stream/
+
+7. Restart resource
+
+
+════════════════════════════════════════════════════════════════
+
+⚡ CARA PALING MUDAH - Pakai Resource Orang Lain:
+
+Saya rekomendasikan cari yang sudah jadi di:
+https://forum.cfx.re/
+
+Keyword: "indonesia", "flag", "bendera"
+
+
+════════════════════════════════════════════════════════════════
+
+❓ TROUBLESHOOTING:
+
+Q: Bendera tidak berubah?
+A: Pastikan folder 'stream' ada dan berisi file texture
+
+Q: Tidak tahu cara buat texture?
+A: Lebih mudah download yang sudah jadi dari komunitas
+
+Q: Mau replace bendera tertentu saja?
+A: Edit client.lua dan hapus entry yang tidak perlu
+
+
+════════════════════════════════════════════════════════════════
+
+Butuh bantuan? Tanya di Discord FiveM Indonesia!
+
