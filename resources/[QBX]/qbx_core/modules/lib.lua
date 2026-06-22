@@ -320,9 +320,17 @@ if isServer then
                 exports.qbx_core:SetEntityBucket(veh, bucket)
             end
 
+            -- Tunggu sebentar untuk bucket sync
+            if bucket and bucket > 0 then
+                Wait(100)
+            end
+
             if ped then
                 -- Safely warp ped to prevent server crash if entity state is locked
+                -- Tunggu lebih lama untuk network sync
+                Wait(200)
                 pcall(SetPedIntoVehicle, ped, veh, -1)
+                Wait(100) -- Tambahan delay untuk ownership transfer
             end
 
             if not pcall(function()
@@ -334,10 +342,20 @@ if isServer then
                     else
                         if owner ~= -1 then return true end
                     end
-                end, 'client never set as owner', 5000)
+                end, 'client never set as owner', 10000)
             end) then
-                DeleteEntity(veh)
-                error('Deleting vehicle which timed out finding an owner')
+                -- Coba sekali lagi sebelum menghapus
+                Wait(1000)
+                local finalOwner = NetworkGetEntityOwner(veh)
+                if finalOwner == -1 and not ped then
+                    DeleteEntity(veh)
+                    error('Deleting vehicle which timed out finding an owner')
+                elseif ped and finalOwner ~= NetworkGetEntityOwner(ped) then
+                    DeleteEntity(veh)
+                    error('Deleting vehicle which timed out finding an owner')
+                end
+                -- Jika ada owner valid, lanjutkan
+                warn('Vehicle owner found after extended wait')
             end
 
             local state = Entity(veh).state
