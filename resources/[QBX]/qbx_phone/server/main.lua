@@ -1,4 +1,4 @@
-local garageConfig = require '@qbx_garages.config.shared'
+local garageConfig = require '@qbx_garages.config.server'
 local QBPhone = {}
 local AppAlerts = {}
 local MentionedTweets = {}

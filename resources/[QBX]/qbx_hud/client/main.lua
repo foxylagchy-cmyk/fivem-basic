@@ -589,7 +589,6 @@ local prevVehicleStats = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
 
 local function updateVehicleHud(data, forceUpdate)
     local shouldUpdate = forceUpdate or false
-    local invOpen = LocalPlayer.state.invOpen
     
     if not forceUpdate then
         for k, v in pairs(data) do
@@ -602,7 +601,7 @@ local function updateVehicleHud(data, forceUpdate)
     
     prevVehicleStats = data
     
-    if shouldUpdate and not invOpen then
+    if shouldUpdate then
         SendNUIMessage({
             action = 'car',
             show = data[1],
@@ -620,6 +619,8 @@ local function updateVehicleHud(data, forceUpdate)
             nosActive = data[13],
             engine = data[14],
             showEngine = data[15],
+            rpm = data[16],
+            gear = data[17],
         })
     end
 end
@@ -704,7 +705,7 @@ CreateThread(function()
                 nitroActive,
                 LocalPlayer.state?.harness,
                 hp,
-                math.ceil(GetEntitySpeed(cache.vehicle) * speedMultiplier),
+                cache.vehicle and math.ceil(GetEntitySpeed(cache.vehicle) * speedMultiplier) or 0,
                 -1,
                 sharedConfig.menu.isCineamticModeChecked,
                 dev,
@@ -774,6 +775,8 @@ CreateThread(function()
                         nitroActive,
                         (GetVehicleEngineHealth(cache.vehicle) / 10),
                         true, -- showEngine always true in vehicle
+                        (GetIsVehicleEngineRunning(cache.vehicle) and GetVehicleCurrentRpm(cache.vehicle) > 0.2) and math.floor(((GetVehicleCurrentRpm(cache.vehicle) - 0.2) / 0.8) * 100) or 0,
+                        GetVehicleCurrentGear(cache.vehicle)
                     })
                 else
                     -- Force hide vehicle HUD saat menu/UI terbuka
@@ -793,6 +796,8 @@ CreateThread(function()
                         false,
                         0,
                         false,
+                        0,
+                        0,
                     }, true) -- forceUpdate = true
                 end
                 showAltitude = false
@@ -801,32 +806,38 @@ CreateThread(function()
                 if wasInVehicle then
                     wasInVehicle = false
                     cruiseOn = false
-                end
                 
-                -- FORCE update untuk hide vehicle HUD saat tidak di vehicle
-                updateVehicleHud({
-                    false, -- hide vehicle HUD
-                    IsPauseMenuActive(),
-                    false,
-                    0,
-                    0,
-                    0,
-                    false,
-                    false,
-                    showSquareB,
-                    showCircleB,
-                    0,
-                    false,
-                    false,
-                    0,
-                    false,
-                }, true) -- forceUpdate = true
+                    -- ONLY update to hide vehicle HUD once when leaving vehicle
+                    updateVehicleHud({
+                        false, -- hide vehicle HUD
+                        IsPauseMenuActive(),
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        showSquareB,
+                        showCircleB,
+                        0,
+                        false,
+                        false,
+                        0,
+                        false,
+                        0,
+                        0,
+                    }, true) -- forceUpdate = true
+                end
                 
                 DisplayRadar(sharedConfig.menu.isOutMapChecked)
             end
         else
             SendNUIMessage({
                 action = 'hudtick',
+                show = false
+            })
+            SendNUIMessage({
+                action = 'car',
                 show = false
             })
         end

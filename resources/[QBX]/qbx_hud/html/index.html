@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <link rel="stylesheet" type="text/css" href="styles.css"/>
+        <link rel="stylesheet" type="text/css" href="styles.css?v=bmw3"/>
         <link rel="stylesheet" type="text/css" href="responsive.css"/>
         <link href="https://cdn.jsdelivr.net/npm/quasar@2.1.0/dist/quasar.prod.css" rel="stylesheet" type="text/css"/>
         <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css"/>
@@ -9,7 +9,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/quasar@2.1.0/dist/quasar.umd.prod.js" defer></script>
-        <script src="app.js" defer></script>
+        <script src="app.js?v=bmw4" defer></script>
     </head>
     <body>
         <div id="baseplate-container" v-show="show">
@@ -254,113 +254,62 @@
             </div>
             <div id="veh-container">
                 <div v-show="showVehicle" class="vehicle-hud-wrapper">
-                    <!-- MAIN SPEEDOMETER GAUGE -->
-                    <div class="speedo-main">
-                        <div class="speedo-outer-ring">
-                            <q-circular-progress 
-                                style="transform: rotate(-140deg);" 
-                                :value="speed" 
-                                size="150px" 
-                                :thickness="0.08" 
-                                color="cyan" 
-                                track-color="rgba(0,0,0,0.7)"
-                                :min="0" 
-                                :max="240">
-                            </q-circular-progress>
-                        </div>
-                        <div class="speedo-center">
-                            <div class="speed-value">{{Math.round(speed)}}</div>
-                            <div class="speed-unit">KM/H</div>
-                        </div>
-                    </div>
-                    
-                    <!-- SIDE INDICATORS -->
-                    <div class="side-indicators">
-                        <!-- FUEL GAUGE -->
-                        <div class="indicator-item fuel-indicator">
-                            <div class="indicator-ring">
-                                <q-circular-progress 
-                                    style="transform: rotate(-140deg);" 
-                                    :value="fuel" 
-                                    size="75px" 
-                                    :thickness="0.12" 
-                                    :color="fuelColor"
-                                    track-color="rgba(0,0,0,0.7)"
-                                    :min="0" 
-                                    :max="100">
-                                </q-circular-progress>
+                    <!-- BMW M HUD DESIGN -->
+                    <div class="bmw-hud">
+                        <div class="bmw-glass">
+                            <!-- SPEED -->
+                            <div class="bmw-text-center">
+                                <div id="speed" class="bmw-speed">
+                                    {{ Math.round(speed) }}
+                                </div>
+                                <div class="bmw-kmh">KM/H</div>
                             </div>
-                            <div class="indicator-center">
-                                <q-icon name="fas fa-gas-pump" size="20px" color="white"/>
-                                <div class="indicator-value">{{Math.round(fuel)}}</div>
+
+                            <!-- RPM -->
+                            <div class="bmw-mt-6">
+                                <div class="bmw-flex bmw-flex-between bmw-mb-2">
+                                    <span class="bmw-text-zinc-500 bmw-text-xs">RPM</span>
+                                    <span id="rpmText" class="bmw-text-zinc-400 bmw-text-xs">{{ Math.round(rpm) }}%</span>
+                                </div>
+                                <div id="rpmSegments" class="bmw-flex bmw-gap-1 bmw-flex-center">
+                                    <div v-for="i in 40" :key="i" class="rpm-segment" :class="getRpmClass(i, rpm)"></div>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- ENGINE HEALTH -->
-                        <div class="indicator-item engine-indicator" v-if="showEngine">
-                            <div class="indicator-ring">
-                                <q-circular-progress 
-                                    style="transform: rotate(-140deg);" 
-                                    :value="engine" 
-                                    size="75px" 
-                                    :thickness="0.12" 
-                                    :color="engineColor"
-                                    track-color="rgba(0,0,0,0.7)"
-                                    :min="0" 
-                                    :max="100">
-                                </q-circular-progress>
-                            </div>
-                            <div class="indicator-center">
-                                <q-icon name="fas fa-oil-can" size="20px" color="white"/>
-                                <div class="indicator-value">{{Math.round(engine)}}</div>
-                            </div>
-                        </div>
-                        
-                        <!-- NOS GAUGE -->
-                        <div class="indicator-item nos-indicator" v-if="showNos">
-                            <div class="indicator-ring" :class="{ 'nos-active': nosActive }">
-                                <q-circular-progress 
-                                    style="transform: rotate(-140deg);" 
-                                    :value="nos" 
-                                    size="75px" 
-                                    :thickness="0.12" 
-                                    :color="nosActive ? '#00ffff' : '#ffffff'"
-                                    track-color="rgba(0,0,0,0.7)"
-                                    :min="0" 
-                                    :max="100">
-                                </q-circular-progress>
-                            </div>
-                            <div class="indicator-center">
-                                <q-icon name="fas fa-meteor" size="20px" :color="nosActive ? 'cyan' : 'white'"/>
-                                <div class="indicator-value" :class="{ 'nos-active-text': nosActive }">{{Math.round(nos)}}</div>
-                            </div>
-                        </div>
-                        
-                        <!-- SEATBELT WARNING -->
-                        <div class="indicator-item seatbelt-indicator" v-if="showSeatbelt && !seatbelt">
-                            <div class="seatbelt-warning">
-                                <q-icon name="fas fa-user-slash" size="28px" color="red"/>
-                            </div>
-                            <div class="seatbelt-text">NO BELT</div>
-                        </div>
-                        
-                        <!-- ALTITUDE (untuk heli/pesawat) -->
-                        <div class="indicator-item altitude-indicator" v-if="showAltitude">
-                            <div class="indicator-ring">
-                                <q-circular-progress 
-                                    style="transform: rotate(-140deg);" 
-                                    :value="altitudegauge" 
-                                    size="75px" 
-                                    :thickness="0.12" 
-                                    color="cyan"
-                                    track-color="rgba(0,0,0,0.7)"
-                                    :min="0" 
-                                    :max="100">
-                                </q-circular-progress>
-                            </div>
-                            <div class="indicator-center">
-                                <q-icon name="fas fa-plane-up" size="20px" color="white"/>
-                                <div class="indicator-value">{{Math.round(altitude)}}</div>
+
+                            <!-- BOTTOM -->
+                            <div class="bmw-mt-8 bmw-flex bmw-flex-between bmw-items-center">
+                                <!-- GEAR -->
+                                <div>
+                                    <div class="bmw-text-zinc-500 bmw-text-xs bmw-mb-1">GEAR</div>
+                                    <div id="gear" class="bmw-text-6xl bmw-text-cyan-400">{{ getGearDisplay(gear) }}</div>
+                                </div>
+
+                                <!-- NOS -->
+                                <div class="bmw-w-220">
+                                    <div class="bmw-flex bmw-flex-between bmw-mb-2">
+                                        <span class="bmw-text-xs bmw-text-zinc-500">NOS</span>
+                                        <span id="nosText" class="bmw-text-xs bmw-text-cyan-400">{{ Math.round(nos) }}%</span>
+                                    </div>
+                                    <div class="bmw-nos-bar-bg">
+                                        <div id="nosBar" class="bmw-nos-bar-fill" :style="{ width: nos + '%' }"></div>
+                                    </div>
+                                </div>
+
+                                <!-- STATUS -->
+                                <div class="bmw-flex bmw-gap-8">
+                                    <div class="bmw-text-center">
+                                        <q-icon name="fas fa-gas-pump" class="bmw-text-amber-400" size="1.2rem"></q-icon>
+                                        <div id="fuel" class="bmw-text-white bmw-text-sm bmw-mt-1">{{ Math.round(fuel) }}%</div>
+                                    </div>
+                                    <div class="bmw-text-center">
+                                        <q-icon name="fas fa-wrench" class="bmw-text-green-400" size="1.2rem"></q-icon>
+                                        <div id="engine" class="bmw-text-white bmw-text-sm bmw-mt-1">{{ Math.round(engine) }}%</div>
+                                    </div>
+                                    <div class="bmw-text-center">
+                                        <q-icon id="seatbeltIcon" name="fas fa-user-lock" :class="seatbelt ? 'bmw-text-green-400' : 'bmw-text-red-400'" size="1.2rem"></q-icon>
+                                        <div id="seatbeltText" class="bmw-text-white bmw-text-sm bmw-mt-1">{{ seatbelt ? 'ON' : 'OFF' }}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -951,6 +951,9 @@ const vehHud = {
       altitudegauge: 75,
       fuel: 0,
       speed: 0,
+      rpm: 0,
+      targetRpm: 0,
+      gear: 0,
       seatbelt: 0,
       showSquareB: 0,
       showVehicle: false,
@@ -977,6 +980,31 @@ const vehHud = {
         this.vehicleHud(event.data);
       }
     });
+
+    // Smooth RPM Interpolation Loop
+    const smoothRpm = () => {
+      if (this.showVehicle) {
+        let diff = this.targetRpm - this.rpm;
+        if (Math.abs(diff) > 0.5) {
+          // Calculate the step based on distance, but cap it so it doesn't jump too fast
+          let step = diff * 0.08; 
+          
+          // Force a minimum speed so it doesn't drag too long at the end
+          if (step > 0 && step < 1.0) step = 1.0;
+          if (step < 0 && step > -1.0) step = -1.0;
+          
+          // Cap the maximum speed per frame so we can actually see the numbers rolling
+          if (step > 3.0) step = 3.0;
+          if (step < -3.0) step = -3.0;
+          
+          this.rpm += step; 
+        } else {
+          this.rpm = this.targetRpm;
+        }
+      }
+      requestAnimationFrame(smoothRpm);
+    };
+    requestAnimationFrame(smoothRpm);
   },
   methods: {
     vehicleHud(data) {
@@ -993,6 +1021,10 @@ const vehHud = {
       this.nosActive = data.nosActive || false;
       this.engine = data.engine || 100;
       this.showEngine = data.showEngine || false;
+      
+      this.targetRpm = data.rpm || 0;
+      
+      this.gear = data.gear || 0;
       
       // Engine color based on health
       if (this.engine <= 45) {
@@ -1041,6 +1073,19 @@ const vehHud = {
         this.showVehicle = false;
       }
     },
+    getRpmClass(index, rpmValue) {
+        const active = Math.round((rpmValue / 100) * 40);
+        if (index <= active) {
+            if (index <= 24) return 'rpm-active-blue';
+            if (index <= 34) return 'rpm-active-yellow';
+            return 'rpm-active-red';
+        }
+        return '';
+    },
+    getGearDisplay(gear) {
+        if (gear === 0) return 'R';
+        return 'D' + gear;
+    }
   },
 };
 const app3 = Vue.createApp(vehHud);
