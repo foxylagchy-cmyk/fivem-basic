@@ -1,14 +1,14 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local bodycamActive = false
 
-local function UpdateBodycam(Player)
-    if not Player then return end
+local function UpdateBodycam(PlayerData)
+    if not PlayerData or not PlayerData.job then return end
     
-    local jobName = Player.PlayerData.job.name
-    local onDuty = Player.PlayerData.job.onduty
+    local jobName = PlayerData.job.name
+    local onDuty = PlayerData.job.onduty
 
     if Config.AllowedJobs[jobName] and onDuty then
-        local fullName = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname
+        local fullName = PlayerData.charinfo.firstname .. " " .. PlayerData.charinfo.lastname
         local department = Config.DepartmentNames[jobName] or string.upper(jobName) .. " DEPARTMENT"
         
         SendNUIMessage({
