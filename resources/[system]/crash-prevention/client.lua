@@ -45,9 +45,7 @@ CreateThread(function()
 end)
 
 RegisterNetEvent('crash-prevention:clearCache', function()
-    -- Clear weapon asset cache
-    ClearPedTasksImmediately(PlayerPedId())
-    
+    -- Clear weapon asset cache (REMOVED: ClearPedTasksImmediately interrupts player driving)
     -- Clear area around player
     local playerCoords = GetEntityCoords(PlayerPedId())
     ClearAreaOfVehicles(playerCoords.x, playerCoords.y, playerCoords.z, 50.0, false, false, false, false, false)
