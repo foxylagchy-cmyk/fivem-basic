@@ -422,6 +422,12 @@ RegisterNetEvent('injury:client:medicRevive', function()
     exports.qbx_core:Notify(Config.Messages.MedicRevive, 'success', 5000)
 end)
 
+-- Event untuk admin revive
+RegisterNetEvent('injury:client:revive', function()
+    print('[Injury System] Admin revive event triggered')
+    RevivePlayer()
+end)
+
 -- Command untuk test (hanya jika diaktifkan di config)
 if Config.EnableTestCommands then
     RegisterCommand('testknock', function()

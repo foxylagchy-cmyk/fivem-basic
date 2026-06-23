@@ -63,3 +63,11 @@ RegisterNetEvent('QBCore:Client:SetDuty', function(onDuty)
     
     UpdateBodycam(Player)
 end)
+
+RegisterNetEvent('ceria_bodycam:client:notify', function(type, messages)
+    SendNUIMessage({
+        action = "notify",
+        type = type,
+        messages = messages
+    })
+end)
