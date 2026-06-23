@@ -16,23 +16,8 @@ CreateThread(function()
     while true do
         Wait(Config.memoryCheckInterval)
         
-        local memoryUsage = GetPerformanceMetrics()
-        
-        if memoryUsage and memoryUsage.memoryUsedMB then
-            local usagePercent = (memoryUsage.memoryUsedMB / 4096) * 100
-            
-            if usagePercent > Config.warningThreshold and not memoryWarningShown then
-                if Config.enableDebug then
-                    print(string.format("^3[CRASH PREVENTION]^7 Memory usage high: %.1f%%", usagePercent))
-                end
-                memoryWarningShown = true
-                
-                -- Trigger cache cleanup
-                TriggerEvent('crash-prevention:clearCache')
-            elseif usagePercent < Config.warningThreshold then
-                memoryWarningShown = false
-            end
-        end
+        -- GetPerformanceMetrics is not a valid FiveM native, disabling memory check
+        -- To prevent memory leaks, we rely on the auto clear cache below
     end
 end)
 
