@@ -10,20 +10,82 @@ lib.addCommand('revive', {
     },
     restricted = 'group.admin'
 }, function(source, args)
-    local target = args.id or source
-    if target == 0 then return end -- Console cannot be revived
-    TriggerClientEvent('qbx_medical:client:playerRevived', target)
-    TriggerClientEvent('injury:client:revive', target)
+    -- Debug logging
+    print('[cmd_revivekill] Revive command called')
+    print('[cmd_revivekill] Source:', source)
+    print('[cmd_revivekill] Args:', json.encode(args))
     
-    local adminName = (source > 0) and GetPlayerName(source) or "Console"
-    TriggerClientEvent('ceria_bodycam:client:notify', target, 'success', {
-        'ADMIN SYSTEM',
-        'Kamu telah disembuhkan oleh Admin: ' .. adminName
-    })
-
-    if source > 0 then
-        lib.notify(source, { title = 'Admin', description = 'Player revived successfully.', type = 'success' })
+    -- args.id is the player ID from ox_lib
+    local target = args.id or source
+    
+    print('[cmd_revivekill] Target resolved:', target)
+    
+    -- Validate target
+    if not target or target == 0 then
+        print('[cmd_revivekill] Invalid target ID')
+        if source > 0 then
+            lib.notify(source, { 
+                title = 'Error', 
+                description = 'Invalid player ID', 
+                type = 'error' 
+            })
+        end
+        return
     end
+    
+    -- Check if player exists
+    local targetPlayer = GetPlayerName(target)
+    print('[cmd_revivekill] Target player name:', targetPlayer or 'NOT FOUND')
+    
+    if not targetPlayer then
+        print('[cmd_revivekill] Player not found or offline')
+        if source > 0 then
+            lib.notify(source, { 
+                title = 'Error', 
+                description = 'Player not found or offline (ID: ' .. target .. ')', 
+                type = 'error' 
+            })
+        end
+        return
+    end
+    
+    print('[cmd_revivekill] Triggering revive events for player:', target)
+    
+    -- Trigger revive events
+    TriggerClientEvent('qbx_medical:client:playerRevived', target)
+    print('[cmd_revivekill] Sent qbx_medical:client:playerRevived')
+    
+    TriggerClientEvent('injury:client:revive', target)
+    print('[cmd_revivekill] Sent injury:client:revive')
+    
+    -- Notify target player
+    local adminName = (source > 0) and GetPlayerName(source) or "Console"
+    
+    -- Try ceria_bodycam notification
+    local notifySuccess = pcall(function()
+        TriggerClientEvent('ceria_bodycam:client:notify', target, 'success', {
+            'ADMIN SYSTEM',
+            'Kamu telah disembuhkan oleh Admin: ' .. adminName
+        })
+    end)
+    
+    -- Fallback notification if ceria_bodycam not available
+    if not notifySuccess then
+        TriggerClientEvent('QBCore:Notify', target, 'You have been revived by Admin: ' .. adminName, 'success')
+    end
+
+    -- Notify admin
+    if source > 0 then
+        lib.notify(source, { 
+            title = 'Admin', 
+            description = 'Player ' .. targetPlayer .. ' (ID: ' .. target .. ') revived successfully.', 
+            type = 'success' 
+        })
+    end
+    
+    -- Log for debugging
+    print(string.format('[cmd_revivekill] SUCCESS: Admin %s revived player %s (ID: %s)', 
+        adminName, targetPlayer, target))
 end)
 
 lib.addCommand('reviveall', {
