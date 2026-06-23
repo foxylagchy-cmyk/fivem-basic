@@ -47,11 +47,17 @@ RegisterNetEvent('QBCore:Client:SetDuty', function(onDuty)
     
     if Config.AllowedJobs[Player.job.name] then
         if onDuty then
-            QBCore.Functions.Notify(Config.Notifications.onDuty, "success")
-            QBCore.Functions.Notify(Config.Notifications.onDutyGPS, "success")
+            SendNUIMessage({
+                action = "notify",
+                type = "success",
+                messages = { Config.Notifications.onDuty, Config.Notifications.onDutyGPS }
+            })
         else
-            QBCore.Functions.Notify(Config.Notifications.offDuty, "error")
-            QBCore.Functions.Notify(Config.Notifications.offDutyGPS, "error")
+            SendNUIMessage({
+                action = "notify",
+                type = "error",
+                messages = { Config.Notifications.offDuty, Config.Notifications.offDutyGPS }
+            })
         end
     end
     

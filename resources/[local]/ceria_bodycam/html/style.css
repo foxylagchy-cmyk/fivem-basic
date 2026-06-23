@@ -17,6 +17,43 @@ body {
     letter-spacing: 0.5px;
 }
 
+#notification-container {
+    position: absolute;
+    top: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 1000;
+}
+
+.custom-notify {
+    background-color: rgba(10, 10, 10, 0.95);
+    color: #e0e0e0;
+    font-size: 13px;
+    padding: 12px 24px;
+    min-width: 250px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+}
+
+.custom-notify.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.custom-notify.success {
+    border-left: 4px solid #14b814;
+}
+
+.custom-notify.error {
+    border-left: 4px solid #b81414;
+}
+
 .line {
     font-size: 13px;
     margin-bottom: 4px;
