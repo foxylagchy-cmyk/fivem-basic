@@ -36,8 +36,13 @@ server_scripts {
 files {
     'locales/*.json',
     'config/client.lua',
-    'config/shared.lua'
+    'config/shared.lua',
+    'html/index.html',
+    'html/script.js',
+    'html/audiolockunlockveh.mp3'
 }
+
+ui_page 'html/index.html'
 
 lua54 'yes'
 use_experimental_fxv2_oal 'yes'

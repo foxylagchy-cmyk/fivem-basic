@@ -21,7 +21,11 @@ local function toggleLock(vehicle)
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
 
-        qbx.playAudio({ audioName = 'Remote_Control_Fob', audioRef = 'PI_Menu_Sounds', source = vehicle })
+        -- Play custom lock/unlock sound
+        SendNUIMessage({
+            action = 'playLockSound',
+            volume = 0.3
+        })
         SetVehicleLights(vehicle, 2)
         Wait(250)
         SetVehicleLights(vehicle, 1)
