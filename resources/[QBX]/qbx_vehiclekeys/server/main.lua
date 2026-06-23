@@ -12,10 +12,8 @@ exports('SetLockState', setLockState)
 
 lib.callback.register('qbx_vehiclekeys:server:findKeys', function(source, netId)
     local vehicle = NetworkGetEntityFromNetworkId(netId)
-    if math.random() <= GetVehicleConfig(vehicle).findKeysChance then
-        GiveKeys(source, vehicle)
-        return true
-    end
+    GiveKeys(source, vehicle)
+    return true
 end)
 
 lib.callback.register('qbx_vehiclekeys:server:carjack', function(source, netId, weaponTypeGroup)
