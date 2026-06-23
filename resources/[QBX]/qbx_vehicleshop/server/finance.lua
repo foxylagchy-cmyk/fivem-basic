@@ -102,7 +102,14 @@ end)
 
 RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
     local src = source
-    local playerData = exports.qbx_core:GetPlayer(src).PlayerData
+    local player = exports.qbx_core:GetPlayer(src)
+    
+    if not player then
+        print('^1[qbx_vehicleshop ERROR]^7 Player not found for source: ' .. src)
+        return
+    end
+    
+    local playerData = player.PlayerData
     addPlayerToFinanceTimer(src, playerData.citizenid)
 end)
 

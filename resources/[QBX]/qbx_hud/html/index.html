@@ -226,15 +226,6 @@
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showEngine" class="hud-item">
-                        <div class="hud-icon" :style="{ background: engineColor }"><q-icon name="fas fa-oil-can" color="white"/></div>
-                        <div class="hud-bar-container">
-                            <div class="hud-bar-fill" :style="{ width: engine + '%', background: engineColor }"></div>
-                            <span class="hud-value">{{Math.round(engine)}}%</span>
-                        </div>
-                    </div>
-                    </transition>
-                    <transition name="fade">
                     <div v-if="showHarness" class="hud-item">
                         <div class="hud-icon harness-icon"><q-icon name="fas fa-user-slash" /></div>
                         <div class="hud-bar-container">
@@ -252,15 +243,6 @@
                     </div>
                     </transition>
                     <transition name="fade">
-                    <div v-if="showNos" class="hud-item">
-                        <div class="hud-icon" :style="{ background: nosColor }"><q-icon name="fas fa-meteor" color="white"/></div>
-                        <div class="hud-bar-container">
-                            <div class="hud-bar-fill" :style="{ width: nos + '%', background: nosColor }"></div>
-                            <span class="hud-value">{{Math.round(nos)}}%</span>
-                        </div>
-                    </div>
-                    </transition>
-                    <transition name="fade">
                     <div v-if="showDev" class="hud-item">
                         <div class="hud-icon dev-icon"><q-icon name="fas fa-terminal" /></div>
                         <div class="hud-bar-container">
@@ -270,63 +252,118 @@
                     </transition>
                 </div>
             </div>
-            <div id="veh-container" style="position: fixed !important; right: 2vh !important; bottom: 2vh !important; left: auto !important; top: auto !important;">
-                <div v-show="show" style="display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 0.5vh;">
-                    <!-- SPEEDOMETER - Modern Analog Design -->
-                    <div class="responsive" id="speedometer" style="position: relative !important; margin: 0 !important;">
-                        <div class="speedo-container">
+            <div id="veh-container">
+                <div v-show="showVehicle" class="vehicle-hud-wrapper">
+                    <!-- MAIN SPEEDOMETER GAUGE -->
+                    <div class="speedo-main">
+                        <div class="speedo-outer-ring">
                             <q-circular-progress 
                                 style="transform: rotate(-140deg);" 
                                 :value="speed" 
-                                size="120px" 
-                                :thickness="0.12" 
+                                size="150px" 
+                                :thickness="0.08" 
                                 color="cyan" 
-                                track-color="rgba(255,255,255,0.1)"
+                                track-color="rgba(0,0,0,0.7)"
                                 :min="0" 
                                 :max="240">
                             </q-circular-progress>
-                            <div class="speedo-center">
-                                <div class="speed-value">{{Math.round(speed)}}</div>
-                                <div class="speed-unit">KM/H</div>
-                            </div>
+                        </div>
+                        <div class="speedo-center">
+                            <div class="speed-value">{{Math.round(speed)}}</div>
+                            <div class="speed-unit">KM/H</div>
                         </div>
                     </div>
                     
-                    <!-- FUEL GAUGE - Modern Analog Design -->
-                    <div class="responsive" id="fuelgauge" style="position: relative !important; margin: 0 !important;">
-                        <div class="fuel-container">
-                            <q-circular-progress 
-                                style="transform: rotate(-140deg);" 
-                                :value="fuel" 
-                                size="80px" 
-                                :thickness="0.15" 
-                                :color="fuelColor"
-                                track-color="rgba(255,255,255,0.1)"
-                                :min="0" 
-                                :max="100">
-                            </q-circular-progress>
-                            <div class="fuel-center">
+                    <!-- SIDE INDICATORS -->
+                    <div class="side-indicators">
+                        <!-- FUEL GAUGE -->
+                        <div class="indicator-item fuel-indicator">
+                            <div class="indicator-ring">
+                                <q-circular-progress 
+                                    style="transform: rotate(-140deg);" 
+                                    :value="fuel" 
+                                    size="75px" 
+                                    :thickness="0.12" 
+                                    :color="fuelColor"
+                                    track-color="rgba(0,0,0,0.7)"
+                                    :min="0" 
+                                    :max="100">
+                                </q-circular-progress>
+                            </div>
+                            <div class="indicator-center">
                                 <q-icon name="fas fa-gas-pump" size="20px" color="white"/>
-                                <div class="fuel-value">{{Math.round(fuel)}}%</div>
+                                <div class="indicator-value">{{Math.round(fuel)}}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- ENGINE HEALTH -->
+                        <div class="indicator-item engine-indicator" v-if="showEngine">
+                            <div class="indicator-ring">
+                                <q-circular-progress 
+                                    style="transform: rotate(-140deg);" 
+                                    :value="engine" 
+                                    size="75px" 
+                                    :thickness="0.12" 
+                                    :color="engineColor"
+                                    track-color="rgba(0,0,0,0.7)"
+                                    :min="0" 
+                                    :max="100">
+                                </q-circular-progress>
+                            </div>
+                            <div class="indicator-center">
+                                <q-icon name="fas fa-oil-can" size="20px" color="white"/>
+                                <div class="indicator-value">{{Math.round(engine)}}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- NOS GAUGE -->
+                        <div class="indicator-item nos-indicator" v-if="showNos">
+                            <div class="indicator-ring" :class="{ 'nos-active': nosActive }">
+                                <q-circular-progress 
+                                    style="transform: rotate(-140deg);" 
+                                    :value="nos" 
+                                    size="75px" 
+                                    :thickness="0.12" 
+                                    :color="nosActive ? '#00ffff' : '#ffffff'"
+                                    track-color="rgba(0,0,0,0.7)"
+                                    :min="0" 
+                                    :max="100">
+                                </q-circular-progress>
+                            </div>
+                            <div class="indicator-center">
+                                <q-icon name="fas fa-meteor" size="20px" :color="nosActive ? 'cyan' : 'white'"/>
+                                <div class="indicator-value" :class="{ 'nos-active-text': nosActive }">{{Math.round(nos)}}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- SEATBELT WARNING -->
+                        <div class="indicator-item seatbelt-indicator" v-if="showSeatbelt && !seatbelt">
+                            <div class="seatbelt-warning">
+                                <q-icon name="fas fa-user-slash" size="28px" color="red"/>
+                            </div>
+                            <div class="seatbelt-text">NO BELT</div>
+                        </div>
+                        
+                        <!-- ALTITUDE (untuk heli/pesawat) -->
+                        <div class="indicator-item altitude-indicator" v-if="showAltitude">
+                            <div class="indicator-ring">
+                                <q-circular-progress 
+                                    style="transform: rotate(-140deg);" 
+                                    :value="altitudegauge" 
+                                    size="75px" 
+                                    :thickness="0.12" 
+                                    color="cyan"
+                                    track-color="rgba(0,0,0,0.7)"
+                                    :min="0" 
+                                    :max="100">
+                                </q-circular-progress>
+                            </div>
+                            <div class="indicator-center">
+                                <q-icon name="fas fa-plane-up" size="20px" color="white"/>
+                                <div class="indicator-value">{{Math.round(altitude)}}</div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- ALTITUDE (untuk heli/pesawat) -->
-                    <div class="responsive" id="altitudegauge" v-if="showAltitude">
-                        <q-circular-progress class="q-ml-xl" style="transform: rotate(-135deg); opacity: 60%;" :value="altitudegauge" size="70px" :thickness="0.21" color="gauge" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="transform: rotate(-135deg); left: -50%;" show-value :value="altitude" size="70px" :thickness="0.21" color="gauge" :min="0" :max="750">
-                        <altitude>{{(altitude)}}</altitude>
-                    </div>
-                    
-                    <!-- SEATBELT WARNING -->
-                    <transition name="fade">
-                    <div class="responsive" id="seatbelt" v-if="showSeatbelt">
-                        <q-circular-progress class="q-ml-xl" style="transform: rotate(-125deg); opacity: 60%;" size="70px" :thickness="0.21" color="gauge" :min="0" :max="100"></q-circular-progress>
-                        <q-circular-progress class="q-ml-xl" style="transform: rotate(-125deg); left: -40%;" show-value size="70px" :thickness="0.21" color="gauge" :min="0" :max="750">
-                        <q-icon name="fas fa-user-slash" style="transform: rotate(125deg);" :value="seatbelt" size="21px" :style="{color: seatbeltColor}"/>
-                    </div>
-                    </transition>
                     
                     <!-- MAP BORDERS -->
                     <div class="border">

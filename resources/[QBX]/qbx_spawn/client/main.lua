@@ -34,6 +34,12 @@ end
 local function createSpawnArea()
     for i = 1, #spawns, 1 do
         local spawn = spawns[i]
+        -- Safety check untuk spawn coords
+        if not spawn or not spawn.coords then
+            print('[qbx_spawn] [ERROR] Invalid spawn at index ' .. i .. ' - skipping')
+            goto continue
+        end
+        
         BeginScaleformMovieMethod(scaleform, 'ADD_AREA')
         ScaleformMovieMethodAddParamInt(i)
         ScaleformMovieMethodAddParamFloat(spawn.coords.x)
@@ -44,6 +50,8 @@ local function createSpawnArea()
         ScaleformMovieMethodAddParamInt(0)
         ScaleformMovieMethodAddParamInt(100)
         EndScaleformMovieMethod()
+        
+        ::continue::
     end
 end
 
@@ -103,6 +111,13 @@ end
 
 local function scaleformDetails(index)
     local spawn = spawns[index]
+    
+    -- Safety check untuk spawn coords
+    if not spawn or not spawn.coords then
+        print('[qbx_spawn] [ERROR] Invalid spawn at index ' .. index)
+        return
+    end
+    
     local arrowStart = {
         vec2(-3150.25, -1427.83),
         vec2(4173.08, 1338.72),
@@ -252,11 +267,17 @@ RegisterNetEvent('qb-spawn:client:setupSpawns', function()
     local lastCoords, lastPropertyId = lib.callback.await('qbx_spawn:server:getLastLocation')
     print('[qbx_spawn] Got last location:', lastCoords)
     
-    spawns[#spawns + 1] = {
-        label = locale('last_location'),
-        coords = lastCoords,
-        propertyId = lastPropertyId
-    }
+    -- Only add last location if coords exist
+    if lastCoords and lastCoords.x and lastCoords.y and lastCoords.z then
+        spawns[#spawns + 1] = {
+            label = locale('last_location'),
+            coords = lastCoords,
+            propertyId = lastPropertyId
+        }
+        print('[qbx_spawn] Added last location spawn')
+    else
+        print('[qbx_spawn] No last location found - new character or invalid coords')
+    end
 
     for i = 1, #config.spawns do
         spawns[#spawns + 1] = config.spawns[i]
@@ -268,6 +289,15 @@ RegisterNetEvent('qb-spawn:client:setupSpawns', function()
     end
 
     print('[qbx_spawn] Total spawn locations:', #spawns)
+    
+    -- Ensure we have at least one valid spawn
+    if #spawns == 0 then
+        print('[qbx_spawn] [ERROR] No spawn locations available! Adding default spawn')
+        spawns[1] = {
+            label = 'Default Spawn',
+            coords = vec4(-1035.71, -2731.87, 12.75, 0.0) -- Default spawn point
+        }
+    end
 
     Wait(400)
 
@@ -279,6 +309,10 @@ RegisterNetEvent('qb-spawn:client:setupSpawns', function()
     Wait(400)
 
     print('[qbx_spawn] Showing spawn selector UI')
+    -- Ensure currentButtonId is valid
+    if currentButtonId > #spawns then
+        currentButtonId = 1
+    end
     scaleformDetails(currentButtonId)
     inputHandler()
 end)

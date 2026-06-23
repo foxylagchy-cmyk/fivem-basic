@@ -149,10 +149,9 @@ RegisterNUICallback('restartHud', function(_, cb)
     cb('ok')
 end)
 
-RegisterCommand('resethud', function(_, cb)
+RegisterCommand('resethud', function()
     Wait(50)
     restartHud()
-    cb('ok')
 end)
 
 RegisterNUICallback('resetStorage', function(_, cb)
@@ -586,15 +585,23 @@ local function updatePlayerHud(data)
     end
 end
 
-local prevVehicleStats = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
+local prevVehicleStats = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
 
-local function updateVehicleHud(data)
-    local shouldUpdate = false
+local function updateVehicleHud(data, forceUpdate)
+    local shouldUpdate = forceUpdate or false
     local invOpen = LocalPlayer.state.invOpen
-    for k, v in pairs(data) do
-        if prevVehicleStats[k] ~= v then shouldUpdate = true break end
+    
+    if not forceUpdate then
+        for k, v in pairs(data) do
+            if prevVehicleStats[k] ~= v then 
+                shouldUpdate = true 
+                break 
+            end
+        end
     end
+    
     prevVehicleStats = data
+    
     if shouldUpdate and not invOpen then
         SendNUIMessage({
             action = 'car',
@@ -608,6 +615,11 @@ local function updateVehicleHud(data)
             showSeatbelt = data[8],
             showSquareB = data[9],
             showCircleB = data[10],
+            nos = data[11],
+            showNos = data[12],
+            nosActive = data[13],
+            engine = data[14],
+            showEngine = data[15],
         })
     end
 end
@@ -704,6 +716,9 @@ CreateThread(function()
                 showSeatbelt = false
             end
             if cache.vehicle and not IsThisModelABicycle(cache.vehicle) then
+                -- Check jika menu/UI terbuka (termasuk NUI focus dari menu lain)
+                local isUIOpen = IsPauseMenuActive() or LocalPlayer.state.invOpen or showMenu or IsNuiFocused()
+                
                 if not wasInVehicle then
                     DisplayRadar(true)
                 end
@@ -740,31 +755,73 @@ CreateThread(function()
                     sharedConfig.menu.isCineamticModeChecked,
                     dev,
                 })
-                updateVehicleHud({
-                    show,
-                    IsPauseMenuActive(),
-                    LocalPlayer.state?.seatbelt,
-                    math.ceil(GetEntitySpeed(cache.vehicle) * speedMultiplier),
-                    getFuelLevel(cache.vehicle),
-                    math.ceil(GetEntityCoords(cache.ped).z * 0.5),
-                    showAltitude,
-                    showSeatbelt,
-                    showSquareB,
-                    showCircleB,
-                })
+                
+                -- Hanya tampilkan vehicle HUD jika TIDAK ada UI yang terbuka
+                if not isUIOpen then
+                    updateVehicleHud({
+                        true, -- show vehicle HUD
+                        IsPauseMenuActive(),
+                        LocalPlayer.state?.seatbelt,
+                        math.ceil(GetEntitySpeed(cache.vehicle) * speedMultiplier),
+                        getFuelLevel(cache.vehicle),
+                        math.ceil(GetEntityCoords(cache.ped).z * 0.5),
+                        showAltitude,
+                        showSeatbelt,
+                        showSquareB,
+                        showCircleB,
+                        nos,
+                        (nos > 0),
+                        nitroActive,
+                        (GetVehicleEngineHealth(cache.vehicle) / 10),
+                        true, -- showEngine always true in vehicle
+                    })
+                else
+                    -- Force hide vehicle HUD saat menu/UI terbuka
+                    updateVehicleHud({
+                        false, -- hide vehicle HUD
+                        IsPauseMenuActive(),
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        showSquareB,
+                        showCircleB,
+                        0,
+                        false,
+                        false,
+                        0,
+                        false,
+                    }, true) -- forceUpdate = true
+                end
                 showAltitude = false
                 showSeatbelt = true
             else
                 if wasInVehicle then
                     wasInVehicle = false
-                    SendNUIMessage({
-                        action = 'car',
-                        show = false,
-                        seatbelt = false,
-                        cruise = false,
-                    })
                     cruiseOn = false
                 end
+                
+                -- FORCE update untuk hide vehicle HUD saat tidak di vehicle
+                updateVehicleHud({
+                    false, -- hide vehicle HUD
+                    IsPauseMenuActive(),
+                    false,
+                    0,
+                    0,
+                    0,
+                    false,
+                    false,
+                    showSquareB,
+                    showCircleB,
+                    0,
+                    false,
+                    false,
+                    0,
+                    false,
+                }, true) -- forceUpdate = true
+                
                 DisplayRadar(sharedConfig.menu.isOutMapChecked)
             end
         else

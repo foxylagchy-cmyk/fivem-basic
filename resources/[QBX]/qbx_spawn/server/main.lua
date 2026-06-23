@@ -5,6 +5,13 @@ local pendingStarterItems = {}
 
 lib.callback.register('qbx_spawn:server:getLastLocation', function(source)
     local player = exports.qbx_core:GetPlayer(source)
+    
+    -- Check if player exists
+    if not player then
+        print('^1[qbx_spawn ERROR]^7 Player not found for source: ' .. source)
+        return vec4(195.17, -933.77, 29.7, 144.5), nil
+    end
+    
     local queryResult = MySQL.single.await('SELECT position FROM players WHERE citizenid = ?', { player.PlayerData.citizenid })
 
     -- Fallback untuk karakter baru yang belum memiliki posisi tersimpan di database
@@ -12,7 +19,7 @@ lib.callback.register('qbx_spawn:server:getLastLocation', function(source)
     local currentPropertyId = player.PlayerData.metadata.currentPropertyId
 
     return position, currentPropertyId
-  end)
+end)
 
 lib.callback.register('qbx_spawn:server:getProperties', function(source)
     if not GetResourceState('qbx_properties'):find('start') then

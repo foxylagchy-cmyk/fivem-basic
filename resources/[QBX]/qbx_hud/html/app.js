@@ -953,12 +953,18 @@ const vehHud = {
       speed: 0,
       seatbelt: 0,
       showSquareB: 0,
-      show: false,
-      showAltitude: true,
-      showSeatbelt: true,
+      showVehicle: false,
+      showAltitude: false,
+      showSeatbelt: false,
       showSquare: false,
       showCircle: false,
       seatbeltColor: "",
+      nos: 0,
+      showNos: false,
+      nosActive: false,
+      engine: 100,
+      showEngine: false,
+      engineColor: "#3FA554",
     };
   },
   
@@ -974,7 +980,7 @@ const vehHud = {
   },
   methods: {
     vehicleHud(data) {
-      this.show = data.show;
+      this.showVehicle = data.show;
       this.speed = data.speed;
       this.altitude = data.altitude;
       this.fuel = (data.fuel * 0.71);
@@ -982,6 +988,21 @@ const vehHud = {
       this.showAltitude = data.showAltitude;
       this.showSquareB = data.showSquareB;
       this.showCircleB = data.showCircleB;
+      this.nos = data.nos || 0;
+      this.showNos = data.showNos || false;
+      this.nosActive = data.nosActive || false;
+      this.engine = data.engine || 100;
+      this.showEngine = data.showEngine || false;
+      
+      // Engine color based on health
+      if (this.engine <= 45) {
+        this.engineColor = "#ff0000";
+      } else if (this.engine <= 75) {
+        this.engineColor = "#dd6e14";
+      } else {
+        this.engineColor = "#3FA554";
+      }
+      
       if (data.seatbelt === true) {
         this.seatbelt = 1;
         this.seatbeltColor = "transparent";
@@ -1017,7 +1038,7 @@ const vehHud = {
         this.showCircle = false;
       }
       if (data.isPaused === 1) {
-        this.show = false;
+        this.showVehicle = false;
       }
     },
   },

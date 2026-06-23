@@ -104,13 +104,20 @@ local function SetupVehicleMenu()
 end
 
 local function SetupRadialMenu()
+    -- Safety check untuk QBX.PlayerData
+    if not QBX or not QBX.PlayerData then
+        print('[qbx_radialmenu] QBX.PlayerData not loaded yet - skipping setup')
+        return
+    end
+    
     SetupVehicleMenu()
 
     for _, v in pairs(Config.MenuItems) do
         lib.addRadialItem(convert(v))
     end
 
-    if Config.GangInteractions[QBX.PlayerData.gang.name] then
+    -- Safety check untuk gang data
+    if QBX.PlayerData.gang and QBX.PlayerData.gang.name and Config.GangInteractions[QBX.PlayerData.gang.name] then
         lib.addRadialItem(convert({
             id = 'ganginteractions',
             label = Lang:t("general.gang_radial"),
@@ -119,7 +126,7 @@ local function SetupRadialMenu()
         }))
     end
 
-    if not QBX.PlayerData.job.onduty then return end
+    if not QBX.PlayerData.job or not QBX.PlayerData.job.onduty then return end
     if not Config.JobInteractions[QBX.PlayerData.job.name] then return end
 
     lib.addRadialItem(convert({
@@ -128,6 +135,7 @@ local function SetupRadialMenu()
         icon = 'briefcase',
         items = Config.JobInteractions[QBX.PlayerData.job.name]
     }))
+
 end
 
 local function IsPolice()
