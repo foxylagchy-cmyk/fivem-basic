@@ -3,7 +3,13 @@
 
 -- Function untuk revive player terdekat
 RegisterNetEvent('injury:client:medicReviveNearby', function()
-    local PlayerData = QBX.PlayerData
+    -- Get player data using QBX export (QBX framework)
+    local PlayerData = exports.qbx_core:GetPlayerData()
+    
+    if not PlayerData or not PlayerData.job then
+        exports.qbx_core:Notify('Tidak dapat mengambil data player', 'error', 3000)
+        return
+    end
     
     -- Cek apakah player adalah medis
     local isMedic = false
@@ -120,7 +126,12 @@ RegisterNetEvent('injury:client:checkNearbyInjured', function()
     return injuredNearby
 end)
 
--- Command untuk revive (alternative)
-RegisterCommand('revive', function(source, args)
+-- Command untuk revive (alternative) - DISABLED karena conflict dengan admin command
+-- RegisterCommand('revive', function(source, args)
+--     TriggerEvent('injury:client:medicReviveNearby')
+-- end, false)
+
+-- Alternative command untuk medic revive
+RegisterCommand('medicrevive', function(source, args)
     TriggerEvent('injury:client:medicReviveNearby')
 end, false)
