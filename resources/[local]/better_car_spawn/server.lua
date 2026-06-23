@@ -72,7 +72,7 @@ RegisterNetEvent('better_car_spawn:vehicleSpawned', function(netId)
     local source = source
     local vehicle = NetworkGetEntityFromNetworkId(netId)
     
-    if not vehicle or vehicle == 0 then
+    if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) then
         TriggerClientEvent('chat:addMessage', source, {
             color = {255, 0, 0},
             args = {"System", "Error: Kendaraan tidak ditemukan"}
@@ -83,18 +83,33 @@ RegisterNetEvent('better_car_spawn:vehicleSpawned', function(netId)
     -- Set vehicle owned
     SetEntityOrphanMode(vehicle, 2)
     
-    -- Give keys via QBX
-    Wait(100)
-    local plate = qbx.getVehiclePlate(vehicle)
+    -- Get plate using native function (no dependency on qbx global)
+    local plate = GetVehicleNumberPlateText(vehicle)
     if plate then
-        pcall(function()
-            config.giveVehicleKeys(source, plate, vehicle)
-        end)
+        plate = plate:gsub("^%s*(.-)%s*$", "%1") -- trim whitespace
+    end
+    
+    -- Give keys via QBX vehiclekeys export
+    local success, err = pcall(function()
+        exports.qbx_vehiclekeys:GiveKeys(source, vehicle)
+    end)
+    
+    if success then
+        print(string.format('[Better Car Spawn] Keys diberikan ke player %s untuk vehicle %s (plate: %s)', 
+            source, vehicle, plate or "N/A"))
+    else
+        print(string.format('[Better Car Spawn] ERROR giving keys: %s', tostring(err)))
+        -- Fallback: Try alternative method
+        if plate then
+            pcall(function()
+                TriggerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', source, plate)
+            end)
+        end
     end
 
     TriggerClientEvent('chat:addMessage', source, {
         color = {0, 255, 0},
-        args = {"System", "Kendaraan berhasil di-spawn! Model: " .. GetEntityModel(vehicle)}
+        args = {"System", "Kendaraan berhasil di-spawn! Plate: " .. (plate or "N/A")}
     })
 end)
 

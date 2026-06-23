@@ -66,9 +66,8 @@ RegisterNetEvent('better_car_spawn:spawnVehicle', function(model)
     SetEntityAsMissionEntity(vehicle, true, true)
     SetVehicleNeedsToBeHotwired(vehicle, false)
     SetVehRadioStation(vehicle, 'OFF')
-    SetPedIntoVehicle(playerPed, vehicle, -1)
-
-    -- Tunggu network ID
+    
+    -- Tunggu network ID SEBELUM warp player
     local netTimeout = 0
     while not NetworkGetEntityIsNetworked(vehicle) and netTimeout < 2000 do
         NetworkRegisterEntityAsNetworked(vehicle)
@@ -78,8 +77,18 @@ RegisterNetEvent('better_car_spawn:spawnVehicle', function(model)
 
     local netId = NetworkGetNetworkIdFromEntity(vehicle)
     
-    -- Notify server
+    -- Notify server untuk set keys DULU
     TriggerServerEvent('better_car_spawn:vehicleSpawned', netId)
+    
+    -- Tunggu sebentar untuk keys diberikan dari server
+    Wait(200)
+    
+    -- BARU warp player ke dalam kendaraan
+    SetPedIntoVehicle(playerPed, vehicle, -1)
+    
+    -- Set engine on explicitly
+    Wait(100)
+    SetVehicleEngineOn(vehicle, true, true, false)
 
     -- Cleanup model
     SetModelAsNoLongerNeeded(modelHash)
@@ -163,8 +172,12 @@ RegisterNetEvent('better_car_spawn:spawnVehicleNoWarp', function(model)
 
     local netId = NetworkGetNetworkIdFromEntity(vehicle)
     
-    -- Notify server
+    -- Notify server untuk set keys
     TriggerServerEvent('better_car_spawn:vehicleSpawned', netId)
+    
+    -- Set engine on untuk vehicle yang tidak langsung di-enter
+    Wait(100)
+    SetVehicleEngineOn(vehicle, true, true, false)
 
     -- Cleanup model
     SetModelAsNoLongerNeeded(modelHash)
