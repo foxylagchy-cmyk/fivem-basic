@@ -1,4 +1,4 @@
-local sharedItems = exports['qb-core']:GetShared('Items')
+local sharedItems = QBCore.Shared.Items
 
 local function DnaHash(s)
     local h = string.gsub(s, '.', function(c)

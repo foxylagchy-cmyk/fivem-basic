@@ -1,4 +1,4 @@
-local sharedWeapons = exports['qb-core']:GetShared('Weapons')
+local sharedWeapons = QBCore.Shared.Weapons
 
 -- Variables
 local CurrentStatusList = {}

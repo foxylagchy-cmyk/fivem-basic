@@ -1,6 +1,6 @@
 -- Variables
 QBCore = exports['qb-core']:GetCoreObject({ 'Functions', 'Commands' })
-local sharedWeapons = exports['qb-core']:GetShared('Weapons')
+local sharedWeapons = QBCore.Shared.Weapons
 local updatingCops = false
 
 -- Functions
@@ -109,7 +109,7 @@ end)
 AddEventHandler('onResourceStart', function(resourceName)
     if resourceName == GetCurrentResourceName() then
         CreateThread(function()
-            MySQL.query("DELETE FROM inventories WHERE identifier = 'policetrash'")
+            -- MySQL.query("DELETE FROM inventories WHERE identifier = 'policetrash'")
         end)
     end
 end)
@@ -271,4 +271,8 @@ QBCore.Functions.CreateUseableItem('moneybag', function(source, item)
     if not Player.PlayerData.job.type == 'leo' then return end
     if not exports['qb-inventory']:RemoveItem(src, 'moneybag', 1, item.slot, 'qb-policejob:moneybag') then return end
     Player.AddMoney('cash', tonumber(item.info.cash), 'qb-policejob:moneybag')
+end)
+
+QBCore.Functions.CreateUseableItem('bodycam', function(source)
+    TriggerClientEvent('qb-policejob:ToggleDuty', source)
 end)

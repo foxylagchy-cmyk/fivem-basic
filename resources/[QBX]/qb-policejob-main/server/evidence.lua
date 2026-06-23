@@ -1,5 +1,5 @@
-local sharedItems = exports['qb-core']:GetShared('Items')
-local sharedWeapons = exports['qb-core']:GetShared('Weapons')
+local sharedItems = QBCore.Shared.Items
+local sharedWeapons = QBCore.Shared.Weapons
 
 local Casings = {}
 local BloodDrops = {}

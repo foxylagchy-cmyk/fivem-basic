@@ -1,4 +1,4 @@
-local sharedItems = exports['qb-core']:GetShared('Items')
+local sharedItems = QBCore.Shared.Items
 
 RegisterNetEvent('police:server:SearchPlayer', function()
     local src = source

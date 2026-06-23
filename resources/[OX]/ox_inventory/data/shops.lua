@@ -111,7 +111,6 @@ return {
 			id = 110, colour = 84, scale = 0.8
 		}, inventory = {
 			{ name = 'bodycam', price = 150, },
-			{ name = 'police_badge', price = 100, },
 			{ name = 'ammo-9', price = 5, },
 			{ name = 'ammo-rifle', price = 5, },
 			{ name = 'ammo-44', price = 10, },

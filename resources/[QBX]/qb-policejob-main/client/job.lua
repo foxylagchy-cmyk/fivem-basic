@@ -1,5 +1,5 @@
-local sharedItems = exports['qb-core']:GetShared('Items')
-local sharedVehicles = exports['qb-core']:GetShared('Vehicles')
+local sharedItems = QBCore.Shared.Items
+local sharedVehicles = QBCore.Shared.Vehicles
 
 local function Round(value, numDecimalPlaces)
     if not numDecimalPlaces then return math.floor(value + 0.5) end

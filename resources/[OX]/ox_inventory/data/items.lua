@@ -3,14 +3,7 @@ return {
 		label = 'Police Bodycam',
 		weight = 100,
 		description = 'A standard issue bodycam. Use it to toggle your duty status.',
-		client = {
-			event = 'qb-policejob:ToggleDuty'
-		}
-	},
-	['police_badge'] = {
-		label = 'Police Badge',
-		weight = 50,
-		description = 'LSPD Officer Badge. Use it to toggle your duty status.',
+		consume = 0,
 		client = {
 			event = 'qb-policejob:ToggleDuty'
 		}
