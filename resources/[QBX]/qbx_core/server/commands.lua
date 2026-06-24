@@ -149,6 +149,7 @@ lib.addCommand('car', {
     local currentVehicle = not keepCurrentVehicle and GetVehiclePedIsIn(ped, false)
     if currentVehicle and currentVehicle ~= 0 then
         DeleteVehicle(currentVehicle)
+        Wait(200) -- Fix for native 0xE8522D58 crash when instantly warping after deletion
     end
 
     local _, vehicle = qbx.spawnVehicle({

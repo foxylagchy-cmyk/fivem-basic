@@ -1,4 +1,13 @@
 return {
+	['bodycam'] = {
+		label = 'Police Bodycam',
+		weight = 100,
+		description = 'A standard issue bodycam. Use it to toggle your duty status.',
+		consume = 0,
+		client = {
+			event = 'qb-policejob:ToggleDuty'
+		}
+	},
 	['testburger'] = {
 		label = 'Test Burger',
 		weight = 220,

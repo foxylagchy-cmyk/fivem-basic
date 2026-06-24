@@ -729,7 +729,7 @@ const playerHud = {
     this.listener = window.addEventListener("message", (event) => {
       if (event.data.action === "hudtick") {
         this.hudTick(event.data);
-      } 
+      }
       // else if(event.data.update) {
       //   eval(event.data.action + "(" + event.data.show + ')')
       // }
@@ -951,14 +951,23 @@ const vehHud = {
       altitudegauge: 75,
       fuel: 0,
       speed: 0,
+      rpm: 0,
+      targetRpm: 0,
+      gear: 0,
       seatbelt: 0,
       showSquareB: 0,
-      show: false,
-      showAltitude: true,
-      showSeatbelt: true,
+      showVehicle: false,
+      showAltitude: false,
+      showSeatbelt: false,
       showSquare: false,
       showCircle: false,
       seatbeltColor: "",
+      nos: 0,
+      showNos: false,
+      nosActive: false,
+      engine: 100,
+      showEngine: false,
+      engineColor: "#3FA554",
     };
   },
   
@@ -971,10 +980,35 @@ const vehHud = {
         this.vehicleHud(event.data);
       }
     });
+
+    // Smooth RPM Interpolation Loop
+    const smoothRpm = () => {
+      if (this.showVehicle) {
+        let diff = this.targetRpm - this.rpm;
+        if (Math.abs(diff) > 0.5) {
+          // Calculate the step based on distance, but cap it so it doesn't jump too fast
+          let step = diff * 0.08; 
+          
+          // Force a minimum speed so it doesn't drag too long at the end
+          if (step > 0 && step < 1.0) step = 1.0;
+          if (step < 0 && step > -1.0) step = -1.0;
+          
+          // Cap the maximum speed per frame so we can actually see the numbers rolling
+          if (step > 3.0) step = 3.0;
+          if (step < -3.0) step = -3.0;
+          
+          this.rpm += step; 
+        } else {
+          this.rpm = this.targetRpm;
+        }
+      }
+      requestAnimationFrame(smoothRpm);
+    };
+    requestAnimationFrame(smoothRpm);
   },
   methods: {
     vehicleHud(data) {
-      this.show = data.show;
+      this.showVehicle = data.show;
       this.speed = data.speed;
       this.altitude = data.altitude;
       this.fuel = (data.fuel * 0.71);
@@ -982,6 +1016,25 @@ const vehHud = {
       this.showAltitude = data.showAltitude;
       this.showSquareB = data.showSquareB;
       this.showCircleB = data.showCircleB;
+      this.nos = data.nos || 0;
+      this.showNos = data.showNos || false;
+      this.nosActive = data.nosActive || false;
+      this.engine = data.engine || 100;
+      this.showEngine = data.showEngine || false;
+      
+      this.targetRpm = data.rpm || 0;
+      
+      this.gear = data.gear || 0;
+      
+      // Engine color based on health
+      if (this.engine <= 45) {
+        this.engineColor = "#ff0000";
+      } else if (this.engine <= 75) {
+        this.engineColor = "#dd6e14";
+      } else {
+        this.engineColor = "#3FA554";
+      }
+      
       if (data.seatbelt === true) {
         this.seatbelt = 1;
         this.seatbeltColor = "transparent";
@@ -1017,9 +1070,22 @@ const vehHud = {
         this.showCircle = false;
       }
       if (data.isPaused === 1) {
-        this.show = false;
+        this.showVehicle = false;
       }
     },
+    getRpmClass(index, rpmValue) {
+        const active = Math.round((rpmValue / 100) * 40);
+        if (index <= active) {
+            if (index <= 24) return 'rpm-active-blue';
+            if (index <= 34) return 'rpm-active-yellow';
+            return 'rpm-active-red';
+        }
+        return '';
+    },
+    getGearDisplay(gear) {
+        if (gear === 0) return 'R';
+        return 'D' + gear;
+    }
   },
 };
 const app3 = Vue.createApp(vehHud);
@@ -1096,3 +1162,192 @@ const baseplateHud = {
 const app4 = Vue.createApp(baseplateHud);
 app4.use(Quasar);
 app4.mount("#baseplate-container");
+
+// SERVER WATERMARK & FPS MONITOR
+const serverWatermark = {
+  data() {
+    return {
+      show: false,
+      fps: 60,
+      ping: 0,
+      packetLoss: "Low",
+      fpsColor: "#00ff00",
+      pingColor: "#00ff00",
+    };
+  },
+  destroyed() {
+    window.removeEventListener("message", this.listener);
+  },
+  mounted() {
+    this.listener = window.addEventListener("message", (event) => {
+      if (event.data.action === "fpsUpdate") {
+        this.fps = event.data.fps;
+        this.ping = event.data.ping;
+        this.packetLoss = event.data.packetLoss;
+        
+        // FPS Color
+        if (event.data.fps >= 60) {
+          this.fpsColor = "#00ff00";
+        } else if (event.data.fps >= 30) {
+          this.fpsColor = "#ffff00";
+        } else {
+          this.fpsColor = "#ff0000";
+        }
+        
+        // Ping Color
+        if (event.data.ping <= 50) {
+          this.pingColor = "#00ff00";
+        } else if (event.data.ping <= 100) {
+          this.pingColor = "#ffff00";
+        } else {
+          this.pingColor = "#ff0000";
+        }
+      } else if (event.data.action === "hudtick") {
+        this.show = event.data.show;
+      }
+    });
+  },
+};
+const app5 = Vue.createApp(serverWatermark);
+app5.use(Quasar);
+app5.mount("#server-watermark");
+
+// Draggable Menu Logic & Edit Mode Logic
+$(document).ready(function() {
+  const dragHandle = document.getElementById('menu-drag-handle');
+  const menu = document.getElementById('openmenu');
+  if (dragHandle && menu) {
+    let isDragging = false;
+    let startX, startY, initialLeft, initialTop;
+
+    // Restore position from localStorage
+    const savedLeft = localStorage.getItem('menuPosLeft');
+    const savedTop = localStorage.getItem('menuPosTop');
+    if (savedLeft && savedTop) {
+      menu.style.left = savedLeft;
+      menu.style.top = savedTop;
+    }
+
+    dragHandle.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      const rect = menu.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      menu.style.left = (initialLeft + dx) + 'px';
+      menu.style.top = (initialTop + dy) + 'px';
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (isDragging) {
+        isDragging = false;
+        localStorage.setItem('menuPosLeft', menu.style.left);
+        localStorage.setItem('menuPosTop', menu.style.top);
+      }
+    });
+  }
+
+  // Edit Mode Logic
+  let editModeActive = false;
+  window.toggleEditMode = function() {
+    editModeActive = !editModeActive;
+    if (editModeActive) {
+      $('#edit-overlay').fadeIn();
+      $('#openmenu').fadeOut(); // Hide menu while editing
+      $.post("https://qbx_hud/closeMenu"); // Hide cursor
+    }
+  }
+
+  window.saveEditMode = function() {
+    editModeActive = false;
+    $('#edit-overlay').fadeOut();
+    $('#openmenu').fadeIn();
+    
+    // Calculate new map offset positions
+    const mapBox = document.getElementById('map-drag-box');
+    const windowW = window.innerWidth;
+    const windowH = window.innerHeight;
+    
+    const rect = mapBox.getBoundingClientRect();
+    let normX = rect.left / windowW;
+    let normY = rect.top / windowH;
+
+    $.post("https://qbx_hud/saveMapPosition", JSON.stringify({
+        x: normX,
+        y: normY
+    }));
+  }
+
+  // Generic Drag for Edit Mode Boxes
+  const dragBoxes = document.querySelectorAll('.drag-box');
+  let activeDragBox = null;
+  let dragStartX, dragStartY, dragInitLeft, dragInitTop;
+
+  dragBoxes.forEach(box => {
+    box.addEventListener('mousedown', function(e) {
+      activeDragBox = this;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      const r = activeDragBox.getBoundingClientRect();
+      dragInitLeft = r.left;
+      dragInitTop = r.top;
+      e.preventDefault();
+    });
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!activeDragBox) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    
+    activeDragBox.style.left = (dragInitLeft + dx) + 'px';
+    activeDragBox.style.top = (dragInitTop + dy) + 'px';
+    activeDragBox.style.bottom = 'auto'; // override bottom
+
+    // Move the actual HUD simultaneously
+    if (activeDragBox.id === 'hud-drag-box') {
+      const hud = document.getElementById('playerHud');
+      if (hud) {
+        hud.style.position = 'absolute';
+        hud.style.left = (dragInitLeft + dx) + 'px';
+        hud.style.top = (dragInitTop + dy) + 'px';
+        hud.style.bottom = 'auto';
+        localStorage.setItem('hudPosLeft', hud.style.left);
+        localStorage.setItem('hudPosTop', hud.style.top);
+      }
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (activeDragBox) {
+      activeDragBox = null;
+    }
+  });
+
+  // Restore HUD position on load
+  const savedHudLeft = localStorage.getItem('hudPosLeft');
+  const savedHudTop = localStorage.getItem('hudPosTop');
+  const hud = document.getElementById('playerHud');
+  if (savedHudLeft && savedHudTop && hud) {
+    hud.style.position = 'absolute';
+    hud.style.left = savedHudLeft;
+    hud.style.top = savedHudTop;
+    hud.style.bottom = 'auto';
+    
+    // Sync drag box
+    const hudBox = document.getElementById('hud-drag-box');
+    if (hudBox) {
+      hudBox.style.left = savedHudLeft;
+      hudBox.style.top = savedHudTop;
+      hudBox.style.bottom = 'auto';
+    }
+  }
+});

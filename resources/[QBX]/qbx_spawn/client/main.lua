@@ -34,6 +34,12 @@ end
 local function createSpawnArea()
     for i = 1, #spawns, 1 do
         local spawn = spawns[i]
+        -- Safety check untuk spawn coords
+        if not spawn or not spawn.coords then
+            print('[qbx_spawn] [ERROR] Invalid spawn at index ' .. i .. ' - skipping')
+            goto continue
+        end
+        
         BeginScaleformMovieMethod(scaleform, 'ADD_AREA')
         ScaleformMovieMethodAddParamInt(i)
         ScaleformMovieMethodAddParamFloat(spawn.coords.x)
@@ -44,6 +50,8 @@ local function createSpawnArea()
         ScaleformMovieMethodAddParamInt(0)
         ScaleformMovieMethodAddParamInt(100)
         EndScaleformMovieMethod()
+        
+        ::continue::
     end
 end
 
@@ -103,6 +111,13 @@ end
 
 local function scaleformDetails(index)
     local spawn = spawns[index]
+    
+    -- Safety check untuk spawn coords
+    if not spawn or not spawn.coords then
+        print('[qbx_spawn] [ERROR] Invalid spawn at index ' .. index)
+        return
+    end
+    
     local arrowStart = {
         vec2(-3150.25, -1427.83),
         vec2(4173.08, 1338.72),
@@ -230,6 +245,10 @@ local function inputHandler()
             end
 
             DoScreenFadeIn(1000)
+            
+            -- Notify server that spawn is complete (for starter items)
+            TriggerServerEvent('qbx_spawn:server:onSpawnComplete')
+            print('[qbx_spawn] Spawn complete - notified server')
 
             break
         end
@@ -241,14 +260,24 @@ local function inputHandler()
 end
 
 RegisterNetEvent('qb-spawn:client:setupSpawns', function()
+    print('[qbx_spawn] setupSpawns event triggered')
+    
     spawns = {}
 
     local lastCoords, lastPropertyId = lib.callback.await('qbx_spawn:server:getLastLocation')
-    spawns[#spawns + 1] = {
-        label = locale('last_location'),
-        coords = lastCoords,
-        propertyId = lastPropertyId
-    }
+    print('[qbx_spawn] Got last location:', lastCoords)
+    
+    -- Only add last location if coords exist
+    if lastCoords and lastCoords.x and lastCoords.y and lastCoords.z then
+        spawns[#spawns + 1] = {
+            label = locale('last_location'),
+            coords = lastCoords,
+            propertyId = lastPropertyId
+        }
+        print('[qbx_spawn] Added last location spawn')
+    else
+        print('[qbx_spawn] No last location found - new character or invalid coords')
+    end
 
     for i = 1, #config.spawns do
         spawns[#spawns + 1] = config.spawns[i]
@@ -259,14 +288,113 @@ RegisterNetEvent('qb-spawn:client:setupSpawns', function()
         spawns[#spawns + 1] = properties[i]
     end
 
+    print('[qbx_spawn] Total spawn locations:', #spawns)
+    
+    -- Ensure we have at least one valid spawn
+    if #spawns == 0 then
+        print('[qbx_spawn] [ERROR] No spawn locations available! Adding default spawn')
+        spawns[1] = {
+            label = 'Default Spawn',
+            coords = vec4(-1035.71, -2731.87, 12.75, 0.0) -- Default spawn point
+        }
+    end
+
     Wait(400)
 
+    print('[qbx_spawn] Setting up camera and map...')
     managePlayer()
     setupCamera()
     setupMap()
 
     Wait(400)
 
+    print('[qbx_spawn] Showing spawn selector UI')
+    -- Ensure currentButtonId is valid
+    if currentButtonId > #spawns then
+        currentButtonId = 1
+    end
     scaleformDetails(currentButtonId)
     inputHandler()
+end)
+
+-- Handler untuk openUI yang hilang (FIX untuk karakter baru)
+RegisterNetEvent('qb-spawn:client:openUI', function(firstSpawn)
+    print('[qbx_spawn] openUI event received, firstSpawn:', firstSpawn)
+    
+    if firstSpawn then
+        -- Add delay untuk ensure everything loaded
+        Wait(1000)
+        
+        -- Trigger setup spawns untuk karakter baru
+        print('[qbx_spawn] Triggering setupSpawns for new character')
+        TriggerEvent('qb-spawn:client:setupSpawns')
+    end
+end)
+
+-- AUTO-FIX: Listen for character loaded event dan auto-trigger spawn selector
+-- Listen to multiple events to catch new character creation
+local hasTriggeredSpawn = false
+
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+    if hasTriggeredSpawn then return end
+    print('[qbx_spawn] OnPlayerLoaded event detected')
+    
+    Wait(2000)
+    
+    if not DoesCamExist(previewCam) and not spawns then
+        print('[qbx_spawn] Auto-triggering spawn selector')
+        hasTriggeredSpawn = true
+        TriggerEvent('qb-spawn:client:setupSpawns')
+    end
+end)
+
+RegisterNetEvent('QBCore:Player:SetPlayerData', function(playerData)
+    if hasTriggeredSpawn then return end
+    if not playerData then return end
+    
+    print('[qbx_spawn] SetPlayerData event detected')
+    
+    -- Check if this is a new character (no last position yet)
+    Wait(2000)
+    
+    if not DoesCamExist(previewCam) and not spawns and not IsScreenFadedIn() then
+        print('[qbx_spawn] New character detected - Auto-triggering spawn selector')
+        hasTriggeredSpawn = true
+        TriggerEvent('qb-spawn:client:setupSpawns')
+    end
+end)
+
+-- EMERGENCY COMMAND: Manual trigger spawn selector jika stuck
+RegisterCommand('forcespawn', function()
+    print('[qbx_spawn] Force spawn command executed')
+    TriggerEvent('qb-spawn:client:setupSpawns')
+end, false)
+
+TriggerEvent('chat:addSuggestion', '/forcespawn', 'Force trigger spawn selector (use if stuck at black screen)')
+
+-- WORKAROUND: Auto-spawn untuk new characters yang stuck di black screen
+-- Jika setelah 10 detik masih frozen dan tidak ada camera, auto-spawn ke default location
+CreateThread(function()
+    Wait(10000) -- Wait 10 seconds after resource start
+    
+    if not DoesCamExist(previewCam) and IsPedStill(cache.ped) and not IsScreenFadedIn() then
+        -- Player stuck di black screen, auto spawn ke default
+        local defaultSpawn = vec4(195.17, -933.77, 29.7, 144.5) -- Legion Square
+        
+        DoScreenFadeOut(500)
+        Wait(500)
+        
+        TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
+        TriggerEvent('QBCore:Client:OnPlayerLoaded')
+        
+        SetEntityCoords(cache.ped, defaultSpawn.x, defaultSpawn.y, defaultSpawn.z, false, false, false, false)
+        SetEntityHeading(cache.ped, defaultSpawn.w)
+        FreezeEntityPosition(cache.ped, false)
+        DisplayRadar(true)
+        
+        Wait(500)
+        DoScreenFadeIn(1000)
+        
+        print('[qbx_spawn] Auto-spawned new character to default location (black screen workaround)')
+    end
 end)

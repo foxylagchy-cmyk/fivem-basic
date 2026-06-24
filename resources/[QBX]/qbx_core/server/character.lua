@@ -25,6 +25,13 @@ local function giveStarterItems(source)
     end
 end
 
+-- Event to give starter items (can be called from other resources)
+RegisterNetEvent('qbx_core:server:giveStarterItems', function(targetSource)
+    local src = targetSource or source
+    giveStarterItems(src)
+    print('[qbx_core] Gave starter items to player', src)
+end)
+
 lib.callback.register('qbx_core:server:getCharacters', function(source)
     local license2, license = GetPlayerIdentifierByType(source, 'license2'), GetPlayerIdentifierByType(source, 'license')
     return storage.fetchAllPlayerEntities(license2, license), getAllowedAmountOfCharacters(license2, license)
@@ -60,7 +67,11 @@ lib.callback.register('qbx_core:server:createCharacter', function(source, data)
     local success = Login(source, nil, newData)
     if not success then return end
 
-    giveStarterItems(source)
+    -- COMPLETELY DISABLED auto starter items for new characters
+    -- Items will be given ONLY after spawn via qbx_spawn:server:onSpawnComplete
+    -- This prevents race condition with spawn selector
+    TriggerEvent('qbx_spawn:server:setPendingStarterItems', source)
+    print('[qbx_core] New character - starter items will be given after spawn')
 
     lib.print.info(('%s has created a character'):format(GetPlayerName(source)))
     return newData

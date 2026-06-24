@@ -2509,7 +2509,7 @@ local function giveItem(playerId, slot, target, count)
 
 		local item = Items(data.name)
 
-		if not item or data.count < count or not Inventory.CanCarryItem(toInventory, item, count, data.metadata) or #(GetEntityCoords(fromInventory.player.ped) - GetEntityCoords(toInventory.player.ped)) > 15 then
+		if not item or data.count < count or not Inventory.CanCarryItem(toInventory, item, count, data.metadata) or #(GetEntityCoords(fromInventory.player.ped) - GetEntityCoords(toInventory.player.ped)) > 50 then
 			return { 'cannot_give', count, data.label }
 		end
 

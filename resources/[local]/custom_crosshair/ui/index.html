@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Crosshair</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="crosshair-container" style="display: none;">
+        <!-- Model 1: Simple Dot -->
+        <div id="model-1" class="crosshair-model active">
+            <div class="dot"></div>
+        </div>
+
+        <!-- Model 2: Classic Cross -->
+        <div id="model-2" class="crosshair-model">
+            <div class="line top"></div>
+            <div class="line bottom"></div>
+            <div class="line left"></div>
+            <div class="line right"></div>
+            <div class="dot-center"></div>
+        </div>
+
+        <!-- Model 3: Circle with Dot -->
+        <div id="model-3" class="crosshair-model">
+            <div class="circle"></div>
+            <div class="dot-center"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

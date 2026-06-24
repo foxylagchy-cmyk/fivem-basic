@@ -60,23 +60,24 @@ return {
     ---@alias ColumnName string
     ---@type [TableName, ColumnName][]
     characterDataTables = {
-        {'properties', 'owner'},
-        {'bank_accounts_new', 'id'},
+        {'properties', 'owner'}, -- qbx_houses/qbx_properties
+        -- {'bank_accounts_new', 'id'}, -- DISABLED: Table tidak ada atau gunakan qb-banking-main
         {'playerskins', 'citizenid'},
-        {'player_mails', 'citizenid'},
+        -- {'player_mails', 'citizenid'}, -- DISABLED: Table tidak ada
         {'player_outfits', 'citizenid'},
         {'player_vehicles', 'citizenid'},
         {'player_groups', 'citizenid'},
         {'players', 'citizenid'},
-        {'npwd_calls', 'identifier'},
-        {'npwd_darkchat_channel_members', 'user_identifier'},
-        {'npwd_marketplace_listings', 'identifier'},
-        {'npwd_messages_participants', 'participant'},
-        {'npwd_notes', 'identifier'},
-        {'npwd_phone_contacts', 'identifier'},
-        {'npwd_phone_gallery', 'identifier'},
-        {'npwd_twitter_profiles', 'identifier'},
-        {'npwd_match_profiles', 'identifier'},
+        -- NPWD Tables - DISABLED: Resource npwd tidak digunakan atau belum terinstall
+        -- {'npwd_calls', 'identifier'},
+        -- {'npwd_darkchat_channel_members', 'user_identifier'},
+        -- {'npwd_marketplace_listings', 'identifier'},
+        -- {'npwd_messages_participants', 'participant'},
+        -- {'npwd_notes', 'identifier'},
+        -- {'npwd_phone_contacts', 'identifier'},
+        -- {'npwd_phone_gallery', 'identifier'},
+        -- {'npwd_twitter_profiles', 'identifier'},
+        -- {'npwd_match_profiles', 'identifier'},
     }, -- Rows to be deleted when the character is deleted
 
     server = {

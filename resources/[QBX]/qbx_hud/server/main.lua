@@ -95,3 +95,15 @@ lib.addCommand('dev', {
 }, function(source)
     TriggerClientEvent('qb-admin:client:ToggleDevmode', source)
 end)
+
+
+-- ============================================
+-- FPS MONITOR CALLBACKS
+-- ============================================
+
+-- Get Player Ping
+lib.callback.register('qbx_hud:server:getPing', function(source)
+    return GetPlayerPing(source)
+end)
+
+print('[qbx_hud] FPS Monitor server callbacks registered!')

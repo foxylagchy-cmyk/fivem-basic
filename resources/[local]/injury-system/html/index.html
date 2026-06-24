@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injury System</title>
+    <!-- Modern Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Bleeding Screen (Knock Phase) -->
+    <div id="bleedingScreen" class="screen">
+        <div class="grid-overlay"></div>
+        <div class="vignette-red pulsing"></div>
+        
+        <div class="ui-container glass-panel">
+            <div class="icon-container">
+                <svg xmlns="http://www.w3.org/Dom/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </div>
+            <div class="title bleeding-title">PENDARAHAN KRITIS</div>
+            <div class="subtitle">Kesadaran mulai menurun...</div>
+            <div class="timer" id="knockTimer">30</div>
+            <div class="instruction">
+                <span class="pulse-dot"></span>
+                <span id="bleedingMessage">Kamu masih bisa berbicara dan meminta bantuan</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Death Screen (Unconscious Phase) -->
+    <div id="deathScreen" class="screen">
+        <div class="grid-overlay"></div>
+        <div class="vignette-dark"></div>
+        
+        <div class="ui-container dark-glass-panel">
+            <div class="icon-container death-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div class="title death-title">TIDAK SADARKAN DIRI</div>
+            <div class="subtitle">Menunggu evakuasi medis</div>
+            <div class="timer death-timer" id="deathTimer">30:00</div>
+            <div class="instruction">
+                <span class="pulse-dot grey"></span>
+                <span id="deathMessage">Tunggu bantuan medis atau waktu habis untuk respawn</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

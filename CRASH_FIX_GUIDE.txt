@@ -1,0 +1,129 @@
+╔═══════════════════════════════════════════════════════════════╗
+║           CRASH FIX GUIDE - KOTA CERIA FIVEM SERVER          ║
+╚═══════════════════════════════════════════════════════════════╝
+
+CRASH HASH: winter-bluebird-low
+PENYEBAB UTAMA: Memory/Streaming overload dari custom assets
+
+═══════════════════════════════════════════════════════════════
+
+✅ SUDAH DIPERBAIKI:
+
+1. STREAMING BUFFER UPGRADE
+   ├─ textureBufferSize: 256 → 512 MB
+   ├─ meshBufferSize: 256 → 512 MB  
+   ├─ timecycleBufferSize: 64 → 128 MB
+   └─ maxMemoryUsage: 2048 → 4096 MB
+
+2. CRASH PREVENTION SYSTEM (BARU!)
+   ├─ Auto memory monitoring setiap 30 detik
+   ├─ Auto cache cleanup setiap 5 menit
+   ├─ Entity spam protection
+   ├─ Explosion spam prevention
+   └─ Freeze detection & reporting
+
+3. STREAMING SAFETY
+   ├─ Priority queue enabled
+   ├─ Retry delay optimization
+   └─ Max active tasks: 128
+
+═══════════════════════════════════════════════════════════════
+
+📋 LANGKAH SELANJUTNYA UNTUK PLAYER:
+
+UNTUK CLIENT (PEMAIN):
+
+1. PASTIKAN GTA V UPDATED
+   └─ Build 2802 atau lebih baru
+
+2. TINGKATKAN MEMORY ALLOCATION
+   └─ Settings → Graphics → Extended Distance Scaling: OFF
+   └─ Settings → Graphics → Population Density: Low-Medium
+   └─ Settings → Graphics → Population Variety: Low-Medium
+
+3. CLEAR CACHE GTA V (jika sering crash)
+   └─ Delete folder: %localappdata%\FiveM\FiveM.app\cache
+   └─ Restart FiveM
+
+4. GUNAKAN PERFORMANCE MODE (optional)
+   └─ Settings → Graphics → Graphics: Normal atau High
+   └─ Jangan gunakan Very High/Ultra untuk server dengan custom assets
+
+═══════════════════════════════════════════════════════════════
+
+🔧 COMMANDS BARU (ADMIN):
+
+/crashlog
+  └─ Lihat daftar player yang melaporkan freeze/crash
+
+/clearcrashlogs
+  └─ Clear crash logs
+
+/announce <pesan>
+  └─ Kirim server announcement
+
+═══════════════════════════════════════════════════════════════
+
+⚠️ PENYEBAB CRASH UMUM:
+
+1. MEMORY OVERLOAD
+   ├─ Terlalu banyak custom vehicles spawn bersamaan
+   ├─ Custom MLO loading saat player teleport cepat
+   └─ FIX: Auto cache cleanup (sudah aktif)
+
+2. STREAMING ISSUES
+   ├─ Player spawn di area dengan banyak custom assets
+   ├─ Teleport ke area custom MLO terlalu cepat
+   └─ FIX: Streaming buffer upgrade (sudah aktif)
+
+3. ENTITY SPAM
+   ├─ Script spawn terlalu banyak entity (vehicles/peds)
+   ├─ Explosion spam dari mod menu abusers
+   └─ FIX: Entity limit & explosion protection (sudah aktif)
+
+4. TEXTURE/MODEL CONFLICT
+   ├─ Custom vehicle textures corrupt atau terlalu besar
+   ├─ DLC conflicts
+   └─ FIX: Verify semua custom asset working properly
+
+═══════════════════════════════════════════════════════════════
+
+📊 MONITORING:
+
+Resource crash-prevention sekarang aktif dan akan:
+✓ Monitor memory usage real-time
+✓ Auto cleanup cache saat memory tinggi
+✓ Detect dan report freeze/crash ke admin
+✓ Prevent entity spam attacks
+✓ Log semua crash incidents
+
+═══════════════════════════════════════════════════════════════
+
+🔍 JIKA MASIH CRASH:
+
+1. Check console untuk error messages
+2. Gunakan command /crashlog untuk lihat pattern
+3. Identifikasi resource yang membuat crash:
+   └─ restart <resource_name>
+   └─ ensure <resource_name>
+4. Report ke admin dengan info:
+   └─ Waktu crash
+   └─ Lokasi saat crash
+   └─ Resource apa yang baru di-restart
+   └─ Screenshot error (jika ada)
+
+═══════════════════════════════════════════════════════════════
+
+TIPS MENCEGAH CRASH:
+
+✅ Jangan spawn banyak vehicle bersamaan
+✅ Tunggu map/MLO load sebelum masuk building
+✅ Clear cache FiveM secara berkala
+✅ Update GTA V & FiveM ke versi terbaru
+✅ Gunakan graphics settings yang sesuai dengan PC
+✅ Restart game setelah main 2-3 jam (mencegah memory leak)
+
+═══════════════════════════════════════════════════════════════
+
+Last Updated: 2024
+Resource Version: crash-prevention v1.0.0

@@ -1,0 +1,9 @@
+This resource is disabled because main resource 'npwd' is not installed.
+
+qbx_npwd requires the main NPWD resource to function.
+NPWD requires Node.js and pnpm to build.
+
+Alternative: Use qbx_phone instead (already included in QBX)
+
+Disabled on: 2026-06-22
+Reason: No such export newPlayer in resource npwd

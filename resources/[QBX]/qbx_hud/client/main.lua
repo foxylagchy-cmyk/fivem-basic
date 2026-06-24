@@ -1,6 +1,9 @@
 local config = require 'config.client'
 local sharedConfig = require 'config.shared'
-local speedMultiplier = config.useMPH and 2.23694 or 3.6
+-- FORCE KM/H - Hardcoded to fix cache issue
+local speedMultiplier = 3.6 -- KM/H multiplier (was: config.useMPH and 2.23694 or 3.6)
+print('[qbx_hud] Speed unit: KM/H (FORCED)')
+print('[qbx_hud] Speed multiplier: ' .. speedMultiplier)
 local cruiseOn = false
 local showAltitude = false
 local showSeatbelt = false
@@ -24,6 +27,12 @@ local showSquareB = false
 local CinematicHeight = 0.2
 local w = 0
 local hasWeapon = false
+local userMapX = 0.0
+local userMapY = 0.0
+
+-- FPS Monitor Variables
+local currentFPS = 0
+local currentPing = 0
 
 DisplayRadar(false)
 
@@ -75,6 +84,10 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     Wait(2000)
     local hudSettings = GetResourceKvpString('hudSettings')
     if hudSettings then loadSettings(json.decode(hudSettings)) end
+    local savedX = GetResourceKvpFloat('userMapX')
+    if savedX ~= 0.0 then userMapX = savedX end
+    local savedY = GetResourceKvpFloat('userMapY')
+    if savedY ~= 0.0 then userMapY = savedY end
     stress = QBX.PlayerData.metadata.stress
     hunger = QBX.PlayerData.metadata.hunger
     thirst = QBX.PlayerData.metadata.thirst
@@ -86,6 +99,10 @@ AddEventHandler('onResourceStart', function(resourceName)
     Wait(2000)
     local hudSettings = GetResourceKvpString('hudSettings')
     if hudSettings then loadSettings(json.decode(hudSettings)) end
+    local savedX = GetResourceKvpFloat('userMapX')
+    if savedX ~= 0.0 then userMapX = savedX end
+    local savedY = GetResourceKvpFloat('userMapY')
+    if savedY ~= 0.0 then userMapY = savedY end
 end)
 
 -- Callbacks & Events
@@ -132,15 +149,24 @@ RegisterNUICallback('restartHud', function(_, cb)
     cb('ok')
 end)
 
-RegisterCommand('resethud', function(_, cb)
+RegisterCommand('resethud', function()
     Wait(50)
     restartHud()
-    cb('ok')
 end)
 
 RegisterNUICallback('resetStorage', function(_, cb)
     Wait(50)
     TriggerEvent('hud:client:resetStorage')
+    cb('ok')
+end)
+
+RegisterNUICallback('saveMapPosition', function(data, cb)
+    Wait(50)
+    userMapX = data.x - 0.01
+    userMapY = (0.7 - data.y)
+    SetResourceKvpFloat('userMapX', userMapX)
+    SetResourceKvpFloat('userMapY', userMapY)
+    TriggerEvent('hud:client:LoadMap')
     cb('ok')
 end)
 
@@ -279,16 +305,16 @@ RegisterNetEvent('hud:client:LoadMap', function()
         -- 0.0 = nav symbol and icons left
         -- 0.1638 = nav symbol and icons stretched
         -- 0.216 = nav symbol and icons raised up
-        SetMinimapComponentPosition('minimap', 'L', 'B', 0.0 + minimapOffset, -0.047, 0.1638, 0.183)
+        SetMinimapComponentPosition('minimap', 'L', 'B', 0.0 + minimapOffset + userMapX, -0.047 + userMapY, 0.1638, 0.183)
 
         -- icons within map
-        SetMinimapComponentPosition('minimap_mask', 'L', 'B', 0.0 + minimapOffset, 0.0, 0.128, 0.20)
+        SetMinimapComponentPosition('minimap_mask', 'L', 'B', 0.0 + minimapOffset + userMapX, 0.0 + userMapY, 0.128, 0.20)
 
         -- -0.01 = map pulled left
         -- 0.025 = map raised up
         -- 0.262 = map stretched
         -- 0.315 = map shorten
-        SetMinimapComponentPosition('minimap_blur', 'L', 'B', -0.01 + minimapOffset, 0.025, 0.262, 0.300)
+        SetMinimapComponentPosition('minimap_blur', 'L', 'B', -0.01 + minimapOffset + userMapX, 0.025 + userMapY, 0.262, 0.300)
         SetBlipAlpha(GetNorthRadarBlip(), 0)
         SetBigmapActive(true, false)
         SetMinimapClipType(0)
@@ -313,16 +339,16 @@ RegisterNetEvent('hud:client:LoadMap', function()
         -- -0.0100 = nav symbol and icons left
         -- 0.180 = nav symbol and icons stretched
         -- 0.258 = nav symbol and icons raised up
-        SetMinimapComponentPosition('minimap', 'L', 'B', -0.0100 + minimapOffset, -0.030, 0.180, 0.258)
+        SetMinimapComponentPosition('minimap', 'L', 'B', -0.0100 + minimapOffset + userMapX, -0.030 + userMapY, 0.180, 0.258)
 
         -- icons within map
-        SetMinimapComponentPosition('minimap_mask', 'L', 'B', 0.200 + minimapOffset, 0.0, 0.065, 0.20)
+        SetMinimapComponentPosition('minimap_mask', 'L', 'B', 0.200 + minimapOffset + userMapX, 0.0 + userMapY, 0.065, 0.20)
 
         -- -0.00 = map pulled left
         -- 0.015 = map raised up
         -- 0.252 = map stretched
         -- 0.338 = map shorten
-        SetMinimapComponentPosition('minimap_blur', 'L', 'B', -0.00 + minimapOffset, 0.015, 0.252, 0.338)
+        SetMinimapComponentPosition('minimap_blur', 'L', 'B', -0.00 + minimapOffset + userMapX, 0.015 + userMapY, 0.252, 0.338)
         SetBlipAlpha(GetNorthRadarBlip(), 0)
         SetMinimapClipType(1)
         SetBigmapActive(true, false)
@@ -559,16 +585,23 @@ local function updatePlayerHud(data)
     end
 end
 
-local prevVehicleStats = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
+local prevVehicleStats = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
 
-local function updateVehicleHud(data)
-    local shouldUpdate = false
-    local invOpen = LocalPlayer.state.invOpen
-    for k, v in pairs(data) do
-        if prevVehicleStats[k] ~= v then shouldUpdate = true break end
+local function updateVehicleHud(data, forceUpdate)
+    local shouldUpdate = forceUpdate or false
+    
+    if not forceUpdate then
+        for k, v in pairs(data) do
+            if prevVehicleStats[k] ~= v then 
+                shouldUpdate = true 
+                break 
+            end
+        end
     end
+    
     prevVehicleStats = data
-    if shouldUpdate and not invOpen then
+    
+    if shouldUpdate then
         SendNUIMessage({
             action = 'car',
             show = data[1],
@@ -581,6 +614,13 @@ local function updateVehicleHud(data)
             showSeatbelt = data[8],
             showSquareB = data[9],
             showCircleB = data[10],
+            nos = data[11],
+            showNos = data[12],
+            nosActive = data[13],
+            engine = data[14],
+            showEngine = data[15],
+            rpm = data[16],
+            gear = data[17],
         })
     end
 end
@@ -665,7 +705,7 @@ CreateThread(function()
                 nitroActive,
                 LocalPlayer.state?.harness,
                 hp,
-                math.ceil(GetEntitySpeed(cache.vehicle) * speedMultiplier),
+                cache.vehicle and math.ceil(GetEntitySpeed(cache.vehicle) * speedMultiplier) or 0,
                 -1,
                 sharedConfig.menu.isCineamticModeChecked,
                 dev,
@@ -677,6 +717,9 @@ CreateThread(function()
                 showSeatbelt = false
             end
             if cache.vehicle and not IsThisModelABicycle(cache.vehicle) then
+                -- Check jika menu/UI terbuka (termasuk NUI focus dari menu lain)
+                local isUIOpen = IsPauseMenuActive() or LocalPlayer.state.invOpen or showMenu or IsNuiFocused()
+                
                 if not wasInVehicle then
                     DisplayRadar(true)
                 end
@@ -713,36 +756,88 @@ CreateThread(function()
                     sharedConfig.menu.isCineamticModeChecked,
                     dev,
                 })
-                updateVehicleHud({
-                    show,
-                    IsPauseMenuActive(),
-                    LocalPlayer.state?.seatbelt,
-                    math.ceil(GetEntitySpeed(cache.vehicle) * speedMultiplier),
-                    getFuelLevel(cache.vehicle),
-                    math.ceil(GetEntityCoords(cache.ped).z * 0.5),
-                    showAltitude,
-                    showSeatbelt,
-                    showSquareB,
-                    showCircleB,
-                })
+                
+                -- Hanya tampilkan vehicle HUD jika TIDAK ada UI yang terbuka
+                if not isUIOpen then
+                    updateVehicleHud({
+                        true, -- show vehicle HUD
+                        IsPauseMenuActive(),
+                        LocalPlayer.state?.seatbelt,
+                        math.ceil(GetEntitySpeed(cache.vehicle) * speedMultiplier),
+                        getFuelLevel(cache.vehicle),
+                        math.ceil(GetEntityCoords(cache.ped).z * 0.5),
+                        showAltitude,
+                        showSeatbelt,
+                        showSquareB,
+                        showCircleB,
+                        nos,
+                        (nos > 0),
+                        nitroActive,
+                        (GetVehicleEngineHealth(cache.vehicle) / 10),
+                        true, -- showEngine always true in vehicle
+                        (GetIsVehicleEngineRunning(cache.vehicle) and GetVehicleCurrentRpm(cache.vehicle) > 0.2) and math.floor(((GetVehicleCurrentRpm(cache.vehicle) - 0.2) / 0.8) * 100) or 0,
+                        GetVehicleCurrentGear(cache.vehicle)
+                    })
+                else
+                    -- Force hide vehicle HUD saat menu/UI terbuka
+                    updateVehicleHud({
+                        false, -- hide vehicle HUD
+                        IsPauseMenuActive(),
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        showSquareB,
+                        showCircleB,
+                        0,
+                        false,
+                        false,
+                        0,
+                        false,
+                        0,
+                        0,
+                    }, true) -- forceUpdate = true
+                end
                 showAltitude = false
                 showSeatbelt = true
             else
                 if wasInVehicle then
                     wasInVehicle = false
-                    SendNUIMessage({
-                        action = 'car',
-                        show = false,
-                        seatbelt = false,
-                        cruise = false,
-                    })
                     cruiseOn = false
+                
+                    -- ONLY update to hide vehicle HUD once when leaving vehicle
+                    updateVehicleHud({
+                        false, -- hide vehicle HUD
+                        IsPauseMenuActive(),
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        showSquareB,
+                        showCircleB,
+                        0,
+                        false,
+                        false,
+                        0,
+                        false,
+                        0,
+                        0,
+                    }, true) -- forceUpdate = true
                 end
+                
                 DisplayRadar(sharedConfig.menu.isOutMapChecked)
             end
         else
             SendNUIMessage({
                 action = 'hudtick',
+                show = false
+            })
+            SendNUIMessage({
+                action = 'car',
                 show = false
             })
         end
@@ -1070,3 +1165,63 @@ RegisterNetEvent('qbx_hud:client:hideHud', function()
         })
     end
 end)
+
+
+-- ============================================
+-- FPS MONITOR INTEGRATION
+-- ============================================
+
+-- FPS Calculation Thread
+local frameCount = 0
+local lastTime = GetGameTimer()
+
+CreateThread(function()
+    while true do
+        frameCount = frameCount + 1
+        local currentTime = GetGameTimer()
+        
+        if currentTime - lastTime >= 1000 then
+            currentFPS = frameCount
+            frameCount = 0
+            lastTime = currentTime
+        end
+        
+        Wait(0)
+    end
+end)
+
+-- Request Ping from Server
+CreateThread(function()
+    while true do
+        if LocalPlayer.state.isLoggedIn then
+            lib.callback('qbx_hud:server:getPing', false, function(ping)
+                currentPing = ping or 0
+            end)
+        end
+        Wait(1000)
+    end
+end)
+
+-- Update FPS Display
+CreateThread(function()
+    while true do
+        if LocalPlayer.state.isLoggedIn then
+            local packetLoss = "Low"
+            if currentPing > 200 then
+                packetLoss = "High"
+            elseif currentPing > 100 then
+                packetLoss = "Med"
+            end
+            
+            SendNUIMessage({
+                action = 'fpsUpdate',
+                fps = currentFPS,
+                ping = currentPing,
+                packetLoss = packetLoss,
+            })
+        end
+        Wait(500)
+    end
+end)
+
+print('[qbx_hud] FPS Monitor loaded successfully!')
