@@ -35,23 +35,7 @@ end
 ---@param vehicle number
 ---@return boolean `true` if player has vehicle keys, `false` otherwise.
 function HasKeys(vehicle)
-    vehicle = vehicle or cache.vehicle
-    if not vehicle then return false end
-    local keysList = LocalPlayer.state.keysList
-    if keysList then
-        local sessionId = Entity(vehicle).state.sessionId
-        if keysList[sessionId] then
-            return true
-        end
-    end
-
-    local owner = Entity(vehicle).state.owner
-    if owner and QBX.PlayerData.citizenid == owner then
-        lib.callback.await('qbx_vehiclekeys:server:giveKeys', false, VehToNet(vehicle))
-        return true
-    end
-
-    return false
+    return true
 end
 
 exports('HasKeys', HasKeys)

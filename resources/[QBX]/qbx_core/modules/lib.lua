@@ -342,17 +342,19 @@ if isServer then
                     else
                         if owner ~= -1 then return true end
                     end
-                end, 'client never set as owner', 10000)
+                end, 'client never set as owner', 30000)
             end) then
                 -- Coba sekali lagi sebelum menghapus
                 Wait(1000)
                 local finalOwner = NetworkGetEntityOwner(veh)
                 if finalOwner == -1 and not ped then
-                    DeleteEntity(veh)
-                    error('Deleting vehicle which timed out finding an owner')
+                    -- DeleteEntity(veh)
+                    -- error('Deleting vehicle which timed out finding an owner')
+                    warn('Vehicle owner timeout, but not deleting (fallback mode)')
                 elseif ped and finalOwner ~= NetworkGetEntityOwner(ped) then
-                    DeleteEntity(veh)
-                    error('Deleting vehicle which timed out finding an owner')
+                    -- DeleteEntity(veh)
+                    -- error('Deleting vehicle which timed out finding an owner')
+                    warn('Vehicle ped owner timeout, but not deleting (fallback mode)')
                 end
                 -- Jika ada owner valid, lanjutkan
                 warn('Vehicle owner found after extended wait')

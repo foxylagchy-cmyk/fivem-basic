@@ -50,7 +50,7 @@ end
 -- Callbacks
 
 QBCore.Functions.CreateCallback('police:GetPlayerStatus', function(_, cb, playerId)
-    local Player = exports['qb-core']:GetPlayer(playerId)
+    local Player = QBCore.Functions.GetPlayer(playerId)
     local statList = {}
     if Player then
         if PlayerStatus[Player.PlayerData.source] and next(PlayerStatus[Player.PlayerData.source]) then
@@ -80,7 +80,7 @@ end)
 
 RegisterNetEvent('evidence:server:CreateFingerDrop', function(coords)
     local src = source
-    local Player = exports['qb-core']:GetPlayer(src)
+    local Player = QBCore.Functions.GetPlayer(src)
     local fingerId = CreateFingerId()
     FingerDrops[fingerId] = Player.PlayerData.metadata['fingerprint']
     TriggerClientEvent('evidence:client:AddFingerPrint', -1, fingerId, Player.PlayerData.metadata['fingerprint'], coords)
@@ -123,7 +123,7 @@ end)
 
 RegisterNetEvent('evidence:server:CreateCasing', function(weapon, coords)
     local src = source
-    local Player = exports['qb-core']:GetPlayer(src)
+    local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
     local casingId = CreateCasingId()
     local weaponInfo = sharedWeapons[weapon]
